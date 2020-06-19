@@ -12,9 +12,7 @@ library(bedr)
 
 
 single.sample.merge<-function(samp, path){
-  get_vcf(file=path[1], caller="HC")
-  get_vcf(file=path[2], caller="S2")
-  get_vcf(file=path[3], caller="DV")
+
   
   file.list<-c("~/tmp/tmp_HC.vcf.gz", "~/tmp/tmp_S2.vcf.gz", "~/tmp/tmp_DV.vcf.gz")
   
@@ -466,7 +464,7 @@ get.annovar.filters<-function(all.fix.merged){
   
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
-  load("~/Dropbox (DaveLab)/Lanie_resources/whitelist.RData")
+  load("whitelist.RData")
   all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% whitelist$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
@@ -478,7 +476,7 @@ get.annovar.filters<-function(all.fix.merged){
   ###repeatMasker
  
 
-  load("~/Dropbox (DaveLab)/Lanie_resources/repeat_masker.RData")
+  load("repeat_masker.RData")
   options(scipen = 999)
   var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+1))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
