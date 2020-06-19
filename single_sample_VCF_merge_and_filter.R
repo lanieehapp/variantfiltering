@@ -21,6 +21,7 @@ single.sample.merged<-three.caller.merge(samp, path)
 
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
+
 write.csv(single.sample.all, file=args[4])
 
 single.sample.filt<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]])
@@ -30,4 +31,6 @@ single.sample.wl<-cbind(single.sample.merged[[7]], single.sample.merged[[8]], si
 write.csv(single.sample.wl, file=args[6])
 
 save(single.sample.merged, file=args[7])
+
+print(args[4])
 
