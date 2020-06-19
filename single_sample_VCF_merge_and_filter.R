@@ -14,7 +14,7 @@ samp<-args[8]
 path<-c(args[1], args[2], args[3])
 
 
-source("~/Dropbox (DaveLab)/Lanie_resources/scripts/single_sample_VCF_merge_functions.R")
+source("single_sample_VCF_merge_functions.R")
 
 single.sample.merged<-three.caller.merge(samp, path)
 

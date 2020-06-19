@@ -48,3 +48,4 @@ ENV PATH variantfiltering:$PATH
 
 # change the permission of the repo
 RUN chmod 777 -R variantfiltering
+WORKDIR /usr/local/bin/variantfiltering
