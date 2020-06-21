@@ -403,7 +403,7 @@ merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
   
   merged.info$Caller_Filter<-(merged.info$`HC_FILTER`=="TRUE" & !(is.na(merged.info$`HC_FILTER`))) | (merged.info$`DV_FILTER`=="PASS"& !(is.na(merged.info$`DV_FILTER`))) | (merged.info$`S2_FILTER`=="PASS"& !(is.na(merged.info$`S2_FILTER`)))
   
-  
+  merged.fix<-merged.fix[!duplicated(merged.fix$CHROM_POS_REF_ALT),]
   
   
   
