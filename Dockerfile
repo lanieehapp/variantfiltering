@@ -31,7 +31,9 @@ RUN apt-get update -y && apt-get install -y \
     bedtools \
     gcc-8-base \
     libmpx2 \		
-    libgcc-8-dev	
+    libgcc-8-dev \
+    bedops \
+    tabix	
 # install Python libraries
 WORKDIR /usr/local/bin
 
