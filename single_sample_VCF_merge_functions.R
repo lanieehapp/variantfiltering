@@ -78,6 +78,10 @@ three.caller.merge<-function(samp, file.list){
   all.gt.merged<-all.gt.merged[!grepl("GL000251.2", all.gt.merged$CHROM_POS_REF_ALT),]
   all.fix.merged<-all.fix.merged[!grepl("GL000251.2", all.fix.merged$CHROM),]
   
+  all.info.merged<-all.info.merged[!grepl("GL000253.2", all.info.merged$CHROM_POS_REF_ALT),]
+  all.gt.merged<-all.gt.merged[!grepl("GL000253.2", all.gt.merged$CHROM_POS_REF_ALT),]
+  all.fix.merged<-all.fix.merged[!grepl("GL000253.2", all.fix.merged$CHROM),]
+  
   all.info.merged<-cbind(all.info.merged, get.annovar.filters(all.fix.merged))
   
 
