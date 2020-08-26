@@ -469,7 +469,7 @@ get.annovar.filters<-function(all.fix.merged){
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
   load("filtered_whitelist_08032020.RData")
-  all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% whitelist$CHROM_POS_REF_ALT
+  all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% wl$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
   all.filters$not.superdups <- all.fix.merged$genomicSuperDups=="."
