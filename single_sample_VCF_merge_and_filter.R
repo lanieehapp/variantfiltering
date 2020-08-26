@@ -25,7 +25,8 @@ whitelist_path<-"filtered_whitelist_08032020.txt"
 comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > /data/rna_whitelist.txt'  )
 
 print(comm)
-system(comm)
+#system(comm)
+system("PWD")
 
 rna_whitelist<-read.csv(file="/data/rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE)
 
