@@ -14,8 +14,11 @@ path<-c(args[1], args[2], args[3])
 
 dna_bam<-args[4]
 rna_bam<-args[5]
-ref<-args[6]
-ref_fai<-args[7]
+
+
+ref=args[6]
+print(ref)
+ref_fai=args[7]
 
 
 whitelist_path<-"filtered_whitelist_08032020.txt"
