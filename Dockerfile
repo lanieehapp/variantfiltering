@@ -23,7 +23,6 @@ RUN apt-get update -y && apt-get install -y \
     libbz2-dev \
     liblzma-dev \
     bzip2 \
-    libcurl4-openssl-dev \
     libssl-dev \
     git \
     autoconf \
