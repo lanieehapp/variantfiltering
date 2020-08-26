@@ -33,7 +33,8 @@ RUN apt-get update -y && apt-get install -y \
     libmpx2 \		
     libgcc-8-dev \
     bedops \
-    tabix	
+    tabix \
+    parallel 	
 # install Python libraries
 WORKDIR /usr/local/bin
 
