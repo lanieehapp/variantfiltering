@@ -34,6 +34,8 @@ RUN apt-get update -y && apt-get install -y \
     libgcc-8-dev \
     bedops \
     tabix \
+    libcurl4-gnutls-dev \
+    libxml2-dev \
     parallel 	
 # install Python libraries
 WORKDIR /usr/local/bin
