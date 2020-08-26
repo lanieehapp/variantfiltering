@@ -468,12 +468,12 @@ get.annovar.filters<-function(all.fix.merged){
   
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
-  load("whitelist.RData")
+  load("filtered_whitelist_08032020.RData")
   all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% whitelist$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
   all.filters$not.superdups <- all.fix.merged$genomicSuperDups=="."
-  all.filters$basic.filters<- (all.filters$whitelist) | (all.filters$rare & all.filters$not.syn & all.filters$not.superdups)  
+  all.filters$basic.filters<- (all.filters$whitelist) | (all.filters$rare & all.filters$not.superdups)  
 
   
   
@@ -482,7 +482,7 @@ get.annovar.filters<-function(all.fix.merged){
 
   load("repeat_masker.RData")
   options(scipen = 999)
-  var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+1))
+  var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+max(nchar(all.fix.merged[,4]),nchar(all.fix.merged[,5]))))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
   table(is.valid.region(var.locs))
   var.locs<-bedr.sort.region(var.locs)
@@ -497,3 +497,288 @@ get.annovar.filters<-function(all.fix.merged){
   return(all.filters[,2:8])
   
 }
+
+
+get_whitelist_vars_dna<-function(dna_bam, ref){
+  whitelist_path<-"filtered_whitelist_08032020.txt"
+  
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref ,'.fai > dna_whitelist.txt' )
+  
+  system(comm)
+  
+  dna_whitelist<-read.csv(file="dna_whitelist.txt", sep="\t", stringsAsFactors = FALSE, header=FALSE)
+  colnames(dna_whitelist)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
+  
+  dna_whitelist$ref_FS<-str_count(dna_whitelist$mpileup, pattern="[.]")
+  dna_whitelist$ref_RS<-str_count(dna_whitelist$mpileup, pattern=",")
+  dna_whitelist$A_FS<-str_count(dna_whitelist$mpileup, pattern="A")
+  dna_whitelist$A_RS<-str_count(dna_whitelist$mpileup, pattern="a")
+  dna_whitelist$C_FS<-str_count(dna_whitelist$mpileup, pattern="C")
+  dna_whitelist$C_RS<-str_count(dna_whitelist$mpileup, pattern="c")
+  dna_whitelist$G_FS<-str_count(dna_whitelist$mpileup, pattern="G")
+  dna_whitelist$G_RS<-str_count(dna_whitelist$mpileup, pattern="g")
+  dna_whitelist$T_FS<-str_count(dna_whitelist$mpileup, pattern="T")
+  dna_whitelist$T_RS<-str_count(dna_whitelist$mpileup, pattern="t")
+  dna_whitelist$DEL<-str_count(dna_whitelist$mpileup, pattern="[*]")
+  dna_whitelist$INS<-str_count(dna_whitelist$mpileup, pattern="[+]")
+  
+  dna_whitelist$A_evidence<-dna_whitelist$A_FS>0 & dna_whitelist$A_RS>0
+  dna_whitelist$C_evidence<-dna_whitelist$C_FS>0 & dna_whitelist$C_RS>0
+  dna_whitelist$T_evidence<-dna_whitelist$T_FS>0 & dna_whitelist$T_RS>0
+  dna_whitelist$G_evidence<-dna_whitelist$G_FS>0 & dna_whitelist$G_RS>0
+  
+  tmp<-dna_whitelist[dna_whitelist$A_evidence,]
+  tmp$Alt_depth<-tmp$A_FS+tmp$A_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  
+  
+  vars<-cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("A", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)
+  
+  tmp<-dna_whitelist[dna_whitelist$C_evidence,]
+  tmp$Alt_depth<-tmp$C_FS+tmp$C_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  vars<-rbind(vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("C", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF))
+  
+  tmp<-dna_whitelist[dna_whitelist$T_evidence,]
+  tmp$Alt_depth<-tmp$T_FS+tmp$T_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  vars<-rbind(vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("T", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF))
+  
+  tmp<-dna_whitelist[dna_whitelist$G_evidence,]
+  tmp$Alt_depth<-tmp$G_FS+tmp$G_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  vars<-data.frame(rbind(vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)))
+  
+  
+  colnames(vars)<-c("Chr", "Pos", "Ref", "Alt", "DNA_depth_total", "DNA_depth_alt", "DNA_AF")
+  vars$CHROM_POS_REF_ALT<-paste(vars$Chr, vars$Pos, vars$Ref, vars$Alt, sep="-")
+  
+  return(vars)
+  
+}
+
+get_whitelist_vars_rna<-function(rna_bam, ref){
+  whitelist_path<-"filtered_whitelist_08032020.txt"
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref ,'.fai > dna_whitelist.txt'  )
+
+  system(comm)
+  
+  rna_whitelist<-read.csv(file="rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE)
+  
+  colnames(rna_whitelist)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
+  
+  
+  rna_whitelist$ref_FS<-str_count(rna_whitelist$mpileup, pattern="[.]")
+  rna_whitelist$ref_RS<-str_count(rna_whitelist$mpileup, pattern=",")
+  rna_whitelist$A_FS<-str_count(rna_whitelist$mpileup, pattern="A")
+  rna_whitelist$A_RS<-str_count(rna_whitelist$mpileup, pattern="a")
+  rna_whitelist$C_FS<-str_count(rna_whitelist$mpileup, pattern="C")
+  rna_whitelist$C_RS<-str_count(rna_whitelist$mpileup, pattern="c")
+  rna_whitelist$G_FS<-str_count(rna_whitelist$mpileup, pattern="G")
+  rna_whitelist$G_RS<-str_count(rna_whitelist$mpileup, pattern="g")
+  rna_whitelist$T_FS<-str_count(rna_whitelist$mpileup, pattern="T")
+  rna_whitelist$T_RS<-str_count(rna_whitelist$mpileup, pattern="t")
+  rna_whitelist$DEL<-str_count(rna_whitelist$mpileup, pattern="[*]")
+  rna_whitelist$INS<-str_count(rna_whitelist$mpileup, pattern="[+]")
+  
+  rna_whitelist$A_evidence<-rna_whitelist$A_FS>0 & rna_whitelist$A_RS>0
+  rna_whitelist$C_evidence<-rna_whitelist$C_FS>0 & rna_whitelist$C_RS>0
+  rna_whitelist$T_evidence<-rna_whitelist$T_FS>0 & rna_whitelist$T_RS>0
+  rna_whitelist$G_evidence<-rna_whitelist$G_FS>0 & rna_whitelist$G_RS>0
+  
+  tmp<-rna_whitelist[rna_whitelist$A_evidence,]
+  tmp$Alt_depth<-tmp$A_FS+tmp$A_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  
+  
+  rna_vars<-cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("A", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)
+  
+  tmp<-rna_whitelist[rna_whitelist$C_evidence,]
+  tmp$Alt_depth<-tmp$C_FS+tmp$C_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  rna_vars<-rbind(rna_vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("C", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF))
+  
+  tmp<-rna_whitelist[rna_whitelist$T_evidence,]
+  tmp$Alt_depth<-tmp$T_FS+tmp$T_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  rna_vars<-rbind(rna_vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("T", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF))
+  
+  tmp<-rna_whitelist[rna_whitelist$G_evidence,]
+  tmp$Alt_depth<-tmp$G_FS+tmp$G_RS
+  tmp$AF<-tmp$Alt_depth/tmp$Depth
+  rna_vars<-data.frame(rbind(rna_vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)))
+  
+  colnames(rna_vars)<-c("Chr", "Pos", "Ref", "Alt", "RNA_depth_total", "RNA_depth_alt", "RNA_AF")
+  
+  rna_vars$CHROM_POS_REF_ALT<-paste(rna_vars$Chr, rna_vars$Pos, rna_vars$Ref, rna_vars$Alt, sep="-")
+  
+  return(rna_vars)
+  
+}
+
+merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
+  dna_whitelist<-get_whitelist_vars_dna(dna_bam, ref)
+  rna_whitelist<-get_whitelist_vars_rna(rna_bam, ref)
+  
+  merged_whitelist<-merge(dna_whitelist, rna_whitelist, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
+  merged_whitelist<-cbind(merged_whitelist$CHROM_POS_REF_ALT, merged_whitelist[,grep("DNA|RNA", colnames(merged_whitelist))])
+  colnames(merged_whitelist)[1]<-"CHROM_POS_REF_ALT"
+  colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
+
+  load("filtered_whitelist_08032020.RData")
+ 
+  
+  all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
+  
+  all_whitelist_discovery<-cbind(single.sample.merged[[7]], single.sample.merged[[8]], single.sample.merged[[9]])
+  CHROM_POS_REF_ALT<-all_whitelist_discovery$CHROM_POS_REF_ALT
+  all_whitelist_discovery<-cbind(CHROM_POS_REF_ALT, all_whitelist_discovery[,!(grepl("CHROM_POS", colnames(all_whitelist_discovery)))])
+  
+  all_whitelist_merged<-merge(all_whitelist_discovery, all_whitelist_annot, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
+  all_whitelist_x<-all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))]
+  all_whitelist_y<-all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))]
+  all_whitelist_other<-all_whitelist_merged[,!(grepl("[.]x|[.]y", colnames(all_whitelist_merged)))]
+  
+  for(i in 1:nrow(all_whitelist_merged)){
+    if(is.na(all_whitelist_x[i,1])){
+      all_whitelist_x[i,]<-all_whitelist_y[i,]
+    }
+  }
+  
+  all_whitelist_merged<-cbind(all_whitelist_x, all_whitelist_other)
+  
+  return(all_whitelist_merged)
+  
+}
+
+get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
+  
+  filt.fix<-single.sample.merged[[4]]
+  
+  var.length<-apply(filt.fix[,4:5], 1, function(x){max(nchar(x))})
+  end.pos<-as.numeric(filt.fix$POS)+var.length-1
+  filt.bed<-cbind(filt.fix$CHROM, as.numeric(filt.fix$POS)-1, end.pos)
+  filt.bed<-unique(filt.bed)
+  
+  write.table(filt.bed, sep="\t", file="filt_bed.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
+  
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref ,'.fai > rna_filt.txt' )
+
+  system(comm)
+  
+  rna_filt<-read.csv(file="rna_filt.txt", sep="\t", stringsAsFactors = FALSE, header=FALSE, quote = "", fill=FALSE)
+  
+  colnames(rna_filt)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
+  rna_filt$CUR_POS<-paste(rna_filt$Chr, rna_filt$Pos, sep="-")
+  
+  filt.fix$CHROM_POS_REF_ALT<-paste(filt.fix$CHROM, filt.fix$POS, filt.fix$REF, filt.fix$ALT, sep="-")
+  
+  rna_filt$ref_FS<-str_count(rna_filt$mpileup, pattern="[.]")
+  rna_filt$ref_RS<-str_count(rna_filt$mpileup, pattern=",")
+  rna_filt$A_FS<-str_count(rna_filt$mpileup, pattern="A")
+  rna_filt$A_RS<-str_count(rna_filt$mpileup, pattern="a")
+  rna_filt$C_FS<-str_count(rna_filt$mpileup, pattern="C")
+  rna_filt$C_RS<-str_count(rna_filt$mpileup, pattern="c")
+  rna_filt$G_FS<-str_count(rna_filt$mpileup, pattern="G")
+  rna_filt$G_RS<-str_count(rna_filt$mpileup, pattern="g")
+  rna_filt$T_FS<-str_count(rna_filt$mpileup, pattern="T")
+  rna_filt$T_RS<-str_count(rna_filt$mpileup, pattern="t")
+  rna_filt$DEL<-str_count(rna_filt$mpileup, pattern="[*]")
+  rna_filt$INS<-str_count(rna_filt$mpileup, pattern="[+]")
+  
+  rna_filt$A_evidence<-rna_filt$A_FS>0 & rna_filt$A_RS>0
+  rna_filt$C_evidence<-rna_filt$C_FS>0 & rna_filt$C_RS>0
+  rna_filt$T_evidence<-rna_filt$T_FS>0 & rna_filt$T_RS>0
+  rna_filt$G_evidence<-rna_filt$G_FS>0 & rna_filt$G_RS>0
+  rna_filt$INS_evidence<-rna_filt$INS>0
+  rna_filt$DEL_evidence<-rna_filt$DEL>0
+  
+  nt<-c("A", "C", "T", "G")
+  all_rna<-NULL
+  for(i in 1:nrow(filt.fix)){
+    curr.pos<-paste(filt.fix$CHROM[i], filt.fix$POS[i], sep="-")
+    curr.ref<-filt.fix$REF[i]
+    curr.alt<-filt.fix$ALT[i]
+    tmp<-rna_filt[rna_filt$CUR_POS == curr.pos,]
+    
+    RNA_depth_total<-tmp$Depth
+    if(RNA_depth_total>=30){
+      RNA_evidence="Covered"
+    } else if(RNA_depth_total < 5){
+      RNA_evidence="No coverage"
+    } else if(RNA_depth_total<30){
+      RNA_evidence<-"Low coverage"
+    }
+    
+    #processing for SNVs
+    if(curr.alt %in% nt & curr.ref %in% nt){
+      if(sum(tmp$A_evidence, tmp$T_evidence, tmp$C_evidence, tmp$G_evidence, tmp$INS_evidence, tmp$DEL_evidence)>1){
+        RNA_evidence<-paste(RNA_evidence, "Multiallelic Locus", sep=";")
+      }
+      
+      if(curr.alt == "A" & tmp$A_evidence){
+        RNA_depth_alt<-tmp$A_FS+tmp$A_RS
+        RNA_AF<-RNA_depth_alt/RNA_depth_total
+        RNA_evidence<-paste(RNA_evidence, "TRUE", sep=";")
+      } else if(curr.alt == "C" & tmp$C_evidence){
+        RNA_depth_alt<-tmp$C_FS+tmp$C_RS
+        RNA_evidence<-paste(RNA_evidence, "TRUE", sep=";")
+        RNA_AF<-RNA_depth_alt/RNA_depth_total
+      } else if(curr.alt == "G" & tmp$G_evidence){
+        RNA_depth_alt<-tmp$G_FS+tmp$G_RS
+        RNA_evidence<-paste(RNA_evidence, "TRUE", sep=";")
+        RNA_AF<-RNA_depth_alt/RNA_depth_total
+      } else if(curr.alt == "T" & tmp$T_evidence){
+        RNA_depth_alt<-tmp$T_FS+tmp$T_RS
+        RNA_evidence<-paste(RNA_evidence, "TRUE", sep=";")
+        RNA_AF<-RNA_depth_alt/RNA_depth_total
+      } else {
+        RNA_depth_alt=0
+        RNA_evidence<-paste(RNA_evidence, "FALSE", sep=";")
+        RNA_AF<-0
+      }
+      
+    }
+    
+    #processing for indels
+    if(!(curr.alt %in% nt) | !(curr.ref %in% nt) ){
+      RNA_depth_alt=0
+      start_pos<-filt.fix$POS[i]
+      end_pos<-max(nchar(curr.alt), nchar(curr.ref))+as.numeric(filt.fix$POS[i])-1
+      
+      all_pos<-unlist(lapply(start_pos:end_pos, function(x){paste(filt.fix$CHROM[i], x, sep="-")}))
+      for(pos in all_pos){
+        tmp2<-rna_filt[rna_filt$CUR_POS == pos,]
+        if(tmp2$DEL_evidence){
+          RNA_depth_alt=max(RNA_depth_alt, tmp2$DEL)
+          RNA_depth_total<-max(RNA_depth_total, tmp2$Depth)
+          RNA_evidence<-paste(RNA_evidence, "DEL", sep=";")
+        } else if (tmp2$INS_evidence){
+          RNA_depth_alt=max(RNA_depth_alt, tmp2$INS)
+          RNA_depth_total<-max(RNA_depth_total, tmp2$Depth)
+          RNA_evidence<-paste(RNA_evidence, "INS", sep=";")
+        }
+        RNA_AF=max(0, RNA_depth_alt/RNA_depth_total)
+      }
+      
+    }
+    
+    
+    all_rna<-rbind(all_rna, cbind(RNA_depth_total, RNA_depth_alt, RNA_AF, RNA_evidence))
+    
+  }
+  
+  colnames(all_rna)<-paste0(samp, ".", colnames(all_rna))
+  return(all_rna)
+}
+
+merge_validation<-function(rna_bam, ref, single.sample.merged, samp){
+  rna_val<-get_validation_vars_rna(rna_bam, ref, single.sample.merged, samp)
+  
+  all_variants_discovery<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]])
+  all_filt_variants<-cbind(all_variants_discovery, rna_val)
+  
+  return(all_filt_variants)
+}
+
+
