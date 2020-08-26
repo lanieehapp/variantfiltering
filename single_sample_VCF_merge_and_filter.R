@@ -17,7 +17,7 @@ rna_bam<-args[5]
 ref<-args[6]
 ref_fai<-args[7]
 
-comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
+comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l /data/filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
 print(comm)
 system(comm)
 
