@@ -559,7 +559,7 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
 
 get_whitelist_vars_rna<-function(rna_bam, ref){
   whitelist_path<-"filtered_whitelist_08032020.txt"
-  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt'  )
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_whitelist.txt'  )
 
   system(comm)
   

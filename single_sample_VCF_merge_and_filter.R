@@ -17,9 +17,14 @@ rna_bam<-args[5]
 ref<-args[6]
 ref_fai<-args[7]
 
-comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l /data/filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
+
+whitelist_path<-"/data/filtered_whitelist_08032020.txt"
+comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > /data/rna_whitelist.txt'  )
+
 print(comm)
 system(comm)
+
+rna_whitelist<-read.csv(file="/data/rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE)
 
 
 source("single_sample_VCF_merge_functions.R")
