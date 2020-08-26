@@ -18,7 +18,7 @@ ref<-args[6]
 ref_fai<-args[7]
 
 
-whitelist_path<-"/data/filtered_whitelist_08032020.txt"
+whitelist_path<-"filtered_whitelist_08032020.txt"
 comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > /data/rna_whitelist.txt'  )
 
 print(comm)
@@ -27,7 +27,7 @@ system(comm)
 rna_whitelist<-read.csv(file="/data/rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE)
 
 
-source("single_sample_VCF_merge_functions.R")
+#source("single_sample_VCF_merge_functions.R")
 
 # single.sample.merged<-three.caller.merge(samp, path)
 # 
