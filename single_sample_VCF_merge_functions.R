@@ -502,7 +502,7 @@ get.annovar.filters<-function(all.fix.merged){
 get_whitelist_vars_dna<-function(dna_bam, ref){
   whitelist_path<-"filtered_whitelist_08032020.txt"
   
-  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref ,'.fai > dna_whitelist.txt' )
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt' )
   
   system(comm)
   
@@ -559,7 +559,7 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
 
 get_whitelist_vars_rna<-function(rna_bam, ref){
   whitelist_path<-"filtered_whitelist_08032020.txt"
-  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref ,'.fai > dna_whitelist.txt'  )
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt'  )
 
   system(comm)
   
@@ -662,7 +662,7 @@ get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
   
   write.table(filt.bed, sep="\t", file="filt_bed.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
   
-  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref ,'.fai > rna_filt.txt' )
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
 
   system(comm)
   
