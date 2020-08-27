@@ -8,7 +8,7 @@ args = commandArgs(trailingOnly=TRUE)
 ##INPUT: sample ID and list of file names - HC, S2, DV
 ##OUTPUT: three sets of variants - 1) raw merged with filters, 2) filtered merged with filters, 3) whitelist merged 
 
-samp<-args[9]
+samp<-args[12]
 
 path<-c(args[1], args[2], args[3])
 
@@ -38,13 +38,13 @@ write.csv(single.sample.all, file=args[8])
 
 #single.sample.filt<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]])
 save(all_filt_variants, file="all_filt_variants.RData")
+
 write.csv(all_filt_variants, file=args[9])
 
 save(all_whitelist, file="all_whitelist.RData")
 
 write.csv(all_whitelist, file=args[10])
 
-save(single.sample.merged, file=args[10])
+save(single.sample.merged, file=args[11])
 
-print(args[7])
 
