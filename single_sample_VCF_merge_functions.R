@@ -474,7 +474,7 @@ get.annovar.filters<-function(all.fix.merged){
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
   all.filters$not.superdups <- all.fix.merged$genomicSuperDups=="."
   all.filters$basic.filters<- (all.filters$whitelist) | (all.filters$rare & all.filters$not.superdups)  
-
+  all.filters$pop.freq.max.all<-all.fix.merged$pop.freq.max.all
   
   
   ###repeatMasker
@@ -494,7 +494,7 @@ get.annovar.filters<-function(all.fix.merged){
   all.filters$not.repeatmasker<-not.repeatmasker
 
   
-  return(all.filters[,2:8])
+  return(all.filters[,2:9])
   
 }
 
