@@ -122,7 +122,7 @@ three.caller.merge<-function(samp, file.list){
   all.info.filt$AF_Filter<-all.gt.filt$afMax<0.25
   
   ##depth filter
-  all.info.filt$Depth_Filter<-all.gt.filt$dpMax>5
+  all.info.filt$Depth_Filter<-all.gt.filt$dpMax>30
   
   
   all.fix.filt<-all.fix.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter,]
@@ -704,7 +704,7 @@ get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
     RNA_depth_total<-tmp$Depth
     if(RNA_depth_total>=30){
       RNA_evidence="Covered"
-    } else if(RNA_depth_total < 5){
+    } else if(RNA_depth_total < 2){
       RNA_evidence="No coverage"
     } else if(RNA_depth_total<30){
       RNA_evidence<-"Low coverage"
