@@ -34,16 +34,16 @@ all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
-write.csv(single.sample.all, file=args[8])
+write.csv(single.sample.all, file=args[8], rownames=FALSE)
 
 #single.sample.filt<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]])
 save(all_filt_variants, file="all_filt_variants.RData")
 
-write.csv(all_filt_variants, file=args[9])
+write.csv(all_filt_variants, file=args[9], row.names = FALSE)
 
 save(all_whitelist, file="all_whitelist.RData")
 
-write.csv(all_whitelist, file=args[10])
+write.csv(all_whitelist, file=args[10], row_names=FALSE)
 
 save(single.sample.merged, file=args[11])
 
