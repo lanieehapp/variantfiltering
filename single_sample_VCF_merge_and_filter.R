@@ -33,13 +33,13 @@ single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], s
 
 
 #all variants in .csv
-write.csv(single.sample.all, file=args[8], rownames=FALSE)
+write.table(single.sample.all, file=args[8], rownames=FALSE, quote=FALSE, sep = ",")
 
 #filtered variants in .csv
-write.csv(all_filt_variants, file=args[9], row.names = FALSE)
+write.table(all_filt_variants, file=args[9], row.names = FALSE, quote = FALSE, sep=",")
 
 #whitelist variants in .csv
-write.csv(all_whitelist, file=args[10], row_names=FALSE)
+write.table(all_whitelist, file=args[10], row_names=FALSE, quote = FALSE, sep=",")
 
 
 #simple merging for all variants, filtered variants, whitelist variants
