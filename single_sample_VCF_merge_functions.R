@@ -489,6 +489,7 @@ get.annovar.filters<-function(all.fix.merged){
   #load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
   
+  print(head(all.fix.merged$REF))
   end.pos<-unlist(lapply(1:nrow(all.fix.merged), function(x){as.numeric(all.fix.merged$POS[x]) + max(nchar(all.fix.merged$REF[x]), nchar(all.fix.merged$ALT[x]))}))
 
   var.locs<-c(paste0(all.fix.merged$CHROM, ":", all.fix.merged$POS,"-", end.pos))
