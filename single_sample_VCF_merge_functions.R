@@ -472,8 +472,8 @@ get.annovar.filters<-function(all.fix.merged){
   
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
-  #load("iltered_whitelist_08032020.RData")
-  load("variantFilter/filtered_whitelist_09302020.RData")
+  load("filtered_whitelist_08032020.RData")
+  #load("variantFilter/filtered_whitelist_09302020.RData")
   all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% wl$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
@@ -506,8 +506,8 @@ get.annovar.filters<-function(all.fix.merged){
 
 
 get_whitelist_vars_dna<-function(dna_bam, ref){
-  #whitelist_path<-"filtered_whitelist_09302020.txt"
-  whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
+  whitelist_path<-"filtered_whitelist_09302020.txt"
+  #whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt' )
   
@@ -565,8 +565,8 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
 }
 
 get_whitelist_vars_rna<-function(rna_bam, ref){
-  #whitelist_path<-"filtered_whitelist_09302020.txt"
-  whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
+  whitelist_path<-"filtered_whitelist_09302020.txt"
+  #whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_whitelist.txt'  )
 
   system(comm)
@@ -633,8 +633,8 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   colnames(merged_whitelist)[1]<-"CHROM_POS_REF_ALT"
   colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
 
-  #load("filtered_whitelist_09302020.RData")
-  load("variantFilter/filtered_whitelist_09302020.RData")
+  load("filtered_whitelist_09302020.RData")
+  #load("variantFilter/filtered_whitelist_09302020.RData")
  
   
   all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
