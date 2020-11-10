@@ -485,8 +485,8 @@ get.annovar.filters<-function(all.fix.merged){
   ###repeatMasker
  
 
-  #load("repeat_masker.RData")
-  load("variantFilter/repeat_masker.RData")
+  load("repeat_masker.RData")
+  #load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
   var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+max(nchar(all.fix.merged[,4]),nchar(all.fix.merged[,5]))))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
