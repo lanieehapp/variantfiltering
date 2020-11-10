@@ -490,7 +490,7 @@ get.annovar.filters<-function(all.fix.merged){
   options(scipen = 999)
   
   print(head(all.fix.merged$REF))
-  end.pos<-unlist(lapply(1:nrow(all.fix.merged), function(x){as.numeric(all.fix.merged$POS[x]) + max(nchar(as.character(all.fix.merged$REF[x])), nchar(as.character(all.fix.merged$ALT[x])))}))
+  end.pos<-unlist(lapply(1:nrow(all.fix.merged), function(x){as.numeric(paste(all.fix.merged$POS[x])) + max(nchar(as.character(all.fix.merged$REF[x])), nchar(as.character(all.fix.merged$ALT[x])))}))
 
   var.locs<-c(paste0(all.fix.merged$CHROM, ":", all.fix.merged$POS,"-", end.pos))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
