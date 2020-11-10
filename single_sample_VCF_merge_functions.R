@@ -410,8 +410,9 @@ merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
   
   merged.fix<-merged.fix[!duplicated(merged.fix$CHROM_POS_REF_ALT),]
   
-  merged.fix<-gsub("\\\\x3b", "=", merged.fix)
-  merged.fix<-gsub("\\\\x3d", ":", merged.fix)
+  merged.fix<-apply(merged.fix, 2, function(x) gsub("\\\\x3b", "=", x))
+  merged.fix<-apply(merged.fix, 2, function(x) gsub("\\\\x3d", ":", x))
+
   
   return(list(merged.fix, merged.info, merged.gt))
   
