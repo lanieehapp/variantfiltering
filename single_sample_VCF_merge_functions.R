@@ -225,12 +225,13 @@ parse.hc.vcf<-function(all.data){
     }
   }
   
-  all.fix.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
-  all.info.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
-  all.gt.parsed.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
+  #all.fix.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
+  #all.info.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
+  #all.gt.parsed.hc$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   
-  
-  
+  all.fix.hc<-cbind(CHROM_POS_REF_ALT, all.fix.hc)
+  all.info.hc<-cbind(CHROM_POS_REF_ALT, all.info.hc)
+  all.gt.hc<-cbind(CHROM_POS_REF_ALT, all.gt.hc)
   
   
   
@@ -409,7 +410,8 @@ merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
   
   merged.fix<-merged.fix[!duplicated(merged.fix$CHROM_POS_REF_ALT),]
   
-  
+  merged.fix<-gsub("\\\\x3b", "=", merged.fix)
+  merged.fix<-gsub("\\\\x3d", ":", merged.fix)
   
   return(list(merged.fix, merged.info, merged.gt))
   
@@ -461,14 +463,16 @@ get.gt.summary<-function(all.data.merged){
 }
 
 get.annovar.filters<-function(all.fix.merged){
-  pop.freq.data<-suppressWarnings(sapply(all.fix.merged[,grep("gnomAD|ExAC|esp6500",colnames(all.fix.merged),value=T)], as.numeric))
+  
+  pop.freq.data<-suppressWarnings(sapply(all.fix.merged[,grep("gnomad|ExAC|esp6500|X1000g",colnames(all.fix.merged),value=T)], as.numeric))
   pop.freq.data[is.na(pop.freq.data)] <- 0
   all.fix.merged$pop.freq.max.all <- apply(pop.freq.data,1,max)
   rm(pop.freq.data)
   
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
-  load("filtered_whitelist_08032020.RData")
+  #load("iltered_whitelist_08032020.RData")
+  load("variantFilter/filtered_whitelist_09302020.RData")
   all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% wl$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
   all.filters$not.syn <- all.fix.merged[,'ExonicFunc.refGene']!="synonymous_SNV" 
@@ -480,7 +484,8 @@ get.annovar.filters<-function(all.fix.merged){
   ###repeatMasker
  
 
-  load("repeat_masker.RData")
+  #load("repeat_masker.RData")
+  load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
   var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+max(nchar(all.fix.merged[,4]),nchar(all.fix.merged[,5]))))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
@@ -500,7 +505,8 @@ get.annovar.filters<-function(all.fix.merged){
 
 
 get_whitelist_vars_dna<-function(dna_bam, ref){
-  whitelist_path<-"filtered_whitelist_08032020.txt"
+  #whitelist_path<-"filtered_whitelist_09302020.txt"
+  whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt' )
   
@@ -558,7 +564,8 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
 }
 
 get_whitelist_vars_rna<-function(rna_bam, ref){
-  whitelist_path<-"filtered_whitelist_08032020.txt"
+  #whitelist_path<-"filtered_whitelist_09302020.txt"
+  whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_whitelist.txt'  )
 
   system(comm)
@@ -625,7 +632,8 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   colnames(merged_whitelist)[1]<-"CHROM_POS_REF_ALT"
   colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
 
-  load("filtered_whitelist_08032020.RData")
+  #load("filtered_whitelist_09302020.RData")
+  load("variantFilter/filtered_whitelist_09302020.RData")
  
   
   all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
