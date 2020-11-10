@@ -231,7 +231,7 @@ parse.hc.vcf<-function(all.data){
   
   all.fix.hc<-cbind(CHROM_POS_REF_ALT, all.fix.hc)
   all.info.hc<-cbind(CHROM_POS_REF_ALT, all.info.hc)
-  all.gt.hc<-cbind(CHROM_POS_REF_ALT, all.gt.hc)
+  all.gt.parsed.hc<-cbind(CHROM_POS_REF_ALT, all.gt.parsed.hc)
   
   
   
