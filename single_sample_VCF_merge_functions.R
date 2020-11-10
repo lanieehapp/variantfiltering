@@ -488,7 +488,10 @@ get.annovar.filters<-function(all.fix.merged){
   load("repeat_masker.RData")
   #load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
-  var.locs<-c(paste0(all.fix.merged[,2], ":", all.fix.merged[,3],"-", as.numeric(all.fix.merged[,3])+max(nchar(all.fix.merged[,5]),nchar(all.fix.merged[,6]))))
+  
+  end.pos<-unlist(lapply(1:nrow(all.fix.merged), function(x){as.numeric(all.fix.merged$POS[x]) + max(nchar(all.fix.merged$REF[x]), nchar(all.fix.merged$ALT[x]))}))
+
+  var.locs<-c(paste0(all.fix.merged$CHROM, ":", all.fix.merged$POS,"-", end.pos))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
   table(is.valid.region(var.locs))
   var.locs<-bedr.sort.region(var.locs)
@@ -664,8 +667,8 @@ get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
   
   filt.fix<-single.sample.merged[[4]]
   
-  var.length<-apply(filt.fix[,4:5], 1, function(x){max(nchar(x))})
-  end.pos<-as.numeric(filt.fix$POS)+var.length-1
+  end_pos<-unlist(lapply(1:nrow(filt.fix), function(x){as.numeric(filt.fix$POS[x]) + max(nchar(filt.fix$REF[x]), nchar(filt.fix$ALT[x]))}))
+  
   filt.bed<-cbind(filt.fix$CHROM, as.numeric(filt.fix$POS)-1, end.pos)
   filt.bed<-unique(filt.bed)
   
