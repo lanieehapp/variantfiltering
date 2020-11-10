@@ -46,7 +46,7 @@ three.caller.merge<-function(samp, file.list){
   
   all.data.merged<-merge.vcfs(samp,all.hc.data, all.dv.data, all.s2.data)
   gt.summary<-get.gt.summary(all.data.merged)
-  all.fix.merged<-all.data.merged[[1]]
+  all.fix.merged<-data.frame(all.data.merged[[1]])
   all.info.merged<-all.data.merged[[2]]
   all.gt.merged<-all.data.merged[[3]]
   
