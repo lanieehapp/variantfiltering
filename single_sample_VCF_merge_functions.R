@@ -472,7 +472,7 @@ get.annovar.filters<-function(all.fix.merged){
   
   all.filters<-data.frame(all.fix.merged$CHROM_POS_REF_ALT, stringsAsFactors = FALSE)
   all.filters$exonic <- all.fix.merged$Func.refGene=="exonic"
-  load("filtered_whitelist_08032020.RData")
+  load("filtered_whitelist_09302020.RData")
   #load("variantFilter/filtered_whitelist_09302020.RData")
   all.filters$whitelist<-all.fix.merged$CHROM_POS_REF_ALT %in% wl$CHROM_POS_REF_ALT
   all.filters$rare.variants <-all.fix.merged$pop.freq.max.all<=0.001
@@ -488,7 +488,7 @@ get.annovar.filters<-function(all.fix.merged){
   load("repeat_masker.RData")
   #load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
-  var.locs<-c(paste0(all.fix.merged[,1], ":", all.fix.merged[,2],"-", as.numeric(all.fix.merged[,2])+max(nchar(all.fix.merged[,4]),nchar(all.fix.merged[,5]))))
+  var.locs<-c(paste0(all.fix.merged[,2], ":", all.fix.merged[,3],"-", as.numeric(all.fix.merged[,3])+max(nchar(all.fix.merged[,5]),nchar(all.fix.merged[,6]))))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
   table(is.valid.region(var.locs))
   var.locs<-bedr.sort.region(var.locs)
