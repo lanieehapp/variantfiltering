@@ -82,6 +82,10 @@ three.caller.merge<-function(samp, file.list){
   all.gt.merged<-all.gt.merged[!grepl("GL000253.2", all.gt.merged$CHROM_POS_REF_ALT),]
   all.fix.merged<-all.fix.merged[!grepl("GL000253.2", all.fix.merged$CHROM),]
   
+  all.fix.merged$REF<-as.character(all.fix.merged$REF)
+  all.fix.merged$ALT<-as.character(all.fix.merged$ALT)
+  
+  
   all.info.merged<-cbind(all.info.merged, get.annovar.filters(all.fix.merged))
   
 
@@ -490,12 +494,14 @@ get.annovar.filters<-function(all.fix.merged){
   options(scipen = 999)
   
   print(head(all.fix.merged$REF))
+
   end.pos<-unlist(lapply(1:nrow(all.fix.merged), function(x){as.numeric(paste(all.fix.merged$POS[x])) + max(nchar(as.character(all.fix.merged$REF[x])), nchar(as.character(all.fix.merged$ALT[x])))}))
 
   var.locs<-c(paste0(all.fix.merged$CHROM, ":", all.fix.merged$POS,"-", end.pos))
   #var.locs<-cbind(all.fix.merged[,1:2], all.fix.merged[,2]+1)
   table(is.valid.region(var.locs))
   var.locs<-bedr.sort.region(var.locs)
+  
   
   not.repeatmasker<-!(in.region(var.locs, bed.file.filt))
   
