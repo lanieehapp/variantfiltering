@@ -54,6 +54,7 @@ three.caller.merge<-function(samp, file.list){
   colnames(all.gt.merged)[1]<-"CHROM_POS_REF_ALT"
   
   
+  
   #put fix in same order as gt and info
   all.fix.merged<-all.fix.merged[order(all.fix.merged$CHROM_POS_REF_ALT),]
   
@@ -98,6 +99,7 @@ three.caller.merge<-function(samp, file.list){
   
   ##calculate filter for good, rare variants in windows 
   all.vars<-NULL
+  print(unique(all.fix.filt$CHROM))
   for(chr in unique(all.fix.filt$CHROM)){
     
     vars<-all.fix.filt[all.fix.filt$CHROM==chr,]
@@ -417,8 +419,7 @@ merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
   
   merged.fix<-merged.fix[!duplicated(merged.fix$CHROM_POS_REF_ALT),]
   
-  merged.fix<-apply(merged.fix, 2, function(x) gsub("\\\\x3b", "=", x))
-  merged.fix<-apply(merged.fix, 2, function(x) gsub("\\\\x3d", ":", x))
+
 
   
   return(list(merged.fix, merged.info, merged.gt))
