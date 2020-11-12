@@ -101,6 +101,7 @@ three.caller.merge<-function(samp, file.list){
   for(chr in unique(all.fix.filt$CHROM)){
     
     vars<-all.fix.filt[all.fix.filt$CHROM==chr,]
+    print(vars[1:5, 1:5])
     vars$CLUST<-NA
     if(nrow(vars)==1){
       vars$CLUST<-FALSE
@@ -117,6 +118,8 @@ three.caller.merge<-function(samp, file.list){
     
     all.vars<-rbind(all.vars, vars)  
   }
+  
+  print(all.vars[1:5, 1:5])
   
   all.vars<-all.vars[order(all.vars$CHROM_POS_REF_ALT),]
   all.info.filt$CLUST<-all.vars$CLUST
