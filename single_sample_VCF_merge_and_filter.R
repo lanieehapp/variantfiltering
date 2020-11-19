@@ -119,8 +119,7 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
 
 # ###whitelist variants###
  n<-nrow(all_whitelist)
- all_whitelist$REF<-as.character(all_whitelist$REF)
- all_whitelist$ALT<-as.character(all_whitelist$ALT)
+
  #end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_whitelist$Start[x]) + max(nchar(all_whitelist$Ref[x]), nchar(all_whitelist$Alt[x]))}))-1
  
  all_whitelist$AAChange.refGene.x<-as.character(all_whitelist$AAChange.refGene.x)
@@ -133,6 +132,9 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
  gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(paste(x))})
  gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
  gnomad_genome_max[gnomad_genome_max==-Inf]<-0
+ 
+ all_whitelist$REF<-as.character(all_whitelist$REF)
+ all_whitelist$ALT<-as.character(all_whitelist$ALT)
  var.type<-rep(NA, n)
  var.type[nchar(all_whitelist$REF)>1]<-"DEL"
  var.type[nchar(all_whitelist$ALT)>1]<-"INS"
