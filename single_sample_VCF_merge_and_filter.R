@@ -45,6 +45,8 @@ all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////
 ###all variants###
 
 n<-nrow(single.sample.all)
+single.sample.all$REF<-as.character(single.sample.all$REF)
+single.sample.all$ALT<-as.character(single.sample.all$ALT)
 end_pos<-unlist(lapply(1:n, function(x){as.numeric(single.sample.all$POS[x]) + max(nchar(single.sample.all$REF[x]), nchar(single.sample.all$ALT[x]))}))-1 
 
 aa_change<-strsplit(single.sample.all$AAChange.refGene, ":")
@@ -77,6 +79,10 @@ colnames(all.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "C
 
 ###filtered variants###
 n<-nrow(all_filt_variants)
+
+all_filt_variants$REF<-as.character(all_filt_variants$REF)
+all_filt_variants$ALT<-as.character(all_filt_variants$ALT)
+
 end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_filt_variants$POS[x]) + max(nchar(all_filt_variants$REF[x]), nchar(all_filt_variants$ALT[x]))}))-1 
 
 aa_change<-strsplit(all_filt_variants$AAChange.refGene, ":")
