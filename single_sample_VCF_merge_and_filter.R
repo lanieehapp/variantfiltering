@@ -49,13 +49,15 @@ single.sample.all$REF<-as.character(single.sample.all$REF)
 single.sample.all$ALT<-as.character(single.sample.all$ALT)
 end_pos<-unlist(lapply(1:n, function(x){as.numeric(single.sample.all$POS[x]) + max(nchar(single.sample.all$REF[x]), nchar(single.sample.all$ALT[x]))}))-1 
 
+
+single.sample.all$AAChange.refGene<-as.character(single.sample.all$AAChange.refGene)
 aa_change<-strsplit(single.sample.all$AAChange.refGene, ":")
 c_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[4], sep=":"), paste("none"))}))
 p_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[5], sep=":"), paste("none"))}))
 exon_num<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[3]), paste("none"))}))
 
 gnomad_genome<-single.sample.all[,grep("gnomad_genome_", colnames(single.sample.all))]
-gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(x)})
+gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(paste(x))})
 gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
 gnomad_genome_max[gnomad_genome_max==-Inf]<-0
 var.type<-rep(NA, n)
@@ -85,13 +87,14 @@ all_filt_variants$ALT<-as.character(all_filt_variants$ALT)
 
 end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_filt_variants$POS[x]) + max(nchar(all_filt_variants$REF[x]), nchar(all_filt_variants$ALT[x]))}))-1 
 
+all_filt_variants$AAChange.refGene<-as.character(all_filt_variants$AAChange.refGene)
 aa_change<-strsplit(all_filt_variants$AAChange.refGene, ":")
 c_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[4], sep=":"), paste("none"))}))
 p_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[5], sep=":"), paste("none"))}))
 exon_num<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[3]), paste("none"))}))
 
 gnomad_genome<-all_filt_variants[,grep("gnomad_genome_", colnames(all_filt_variants))]
-gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(x)})
+gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(paste(x))})
 gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
 gnomad_genome_max[gnomad_genome_max==-Inf]<-0
 var.type<-rep(NA, n)
@@ -117,13 +120,15 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
 # ###whitelist variants###
  n<-nrow(all_whitelist)
  #end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_whitelist$Start[x]) + max(nchar(all_whitelist$Ref[x]), nchar(all_whitelist$Alt[x]))}))-1
- aa_change<-strsplit(all_whitelist$AAChange.refGene, ":")
+ 
+ all_whitelist$AAChange.refGene.x<-as.character(all_whitelist$AAChange.refGene.x)
+ aa_change<-strsplit(all_whitelist$AAChange.refGene.x, ":")
  c_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[4], sep=":"), paste("none"))}))
  p_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[5], sep=":"), paste("none"))}))
  exon_num<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[3]), paste("none"))}))
 
  gnomad_genome<-all_whitelist[,grep("gnomad_genome_", colnames(all_whitelist))]
- gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(x)})
+ gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(paste(x))})
  gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
  gnomad_genome_max[gnomad_genome_max==-Inf]<-0
  var.type<-rep(NA, n)
