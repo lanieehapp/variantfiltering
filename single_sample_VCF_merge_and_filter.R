@@ -133,11 +133,11 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
  gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
  gnomad_genome_max[gnomad_genome_max==-Inf]<-0
  
- all_whitelist$REF<-as.character(all_whitelist$REF)
- all_whitelist$ALT<-as.character(all_whitelist$ALT)
+ all_whitelist$Ref<-as.character(all_whitelist$Ref)
+ all_whitelist$Alt<-as.character(all_whitelist$Alt)
  var.type<-rep(NA, n)
- var.type[nchar(all_whitelist$REF)>1]<-"DEL"
- var.type[nchar(all_whitelist$ALT)>1]<-"INS"
+ var.type[nchar(all_whitelist$Ref)>1]<-"DEL"
+ var.type[nchar(all_whitelist$Alt)>1]<-"INS"
  var.type[is.na(var.type)]<-"SNP"
 
  wl.maf<-data.frame(all_whitelist$Gene.refGene.x, rep("none", n), rep("davelab", n), rep("hg38", n), all_whitelist$Chr,
