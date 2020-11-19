@@ -99,11 +99,11 @@ three.caller.merge<-function(samp, file.list){
   
   ##calculate filter for good, rare variants in windows 
   all.vars<-NULL
-  print(unique(all.fix.filt$CHROM))
+  
   for(chr in unique(all.fix.filt$CHROM)){
     
     vars<-all.fix.filt[all.fix.filt$CHROM==chr,]
-    print(vars[1:5, 1:5])
+    
     vars$CLUST<-NA
     if(nrow(vars)==1){
       vars$CLUST<-FALSE
