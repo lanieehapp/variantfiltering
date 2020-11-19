@@ -31,14 +31,14 @@ all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
 
-single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3db", "=", x)), stringsAsFactors = FALSE)
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
 
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3db", "=", x)), stringsAsFactors = FALSE)
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
 
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3db", "=", x)), stringsAsFactors = FALSE)
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
 
 
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
