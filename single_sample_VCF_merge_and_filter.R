@@ -32,13 +32,13 @@ single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], s
 
 
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
-single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\x3b", "=", x)), stringsAsFactors = FALSE)
 
 all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\x3b", "=", x)), stringsAsFactors = FALSE)
 
 all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\x3db", "=", x)), stringsAsFactors = FALSE)
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\x3b", "=", x)), stringsAsFactors = FALSE)
 
 
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
