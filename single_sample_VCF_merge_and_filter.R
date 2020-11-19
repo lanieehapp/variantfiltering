@@ -119,6 +119,8 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
 
 # ###whitelist variants###
  n<-nrow(all_whitelist)
+ all_whitelist$REF<-as.character(all_whitelist$REF)
+ all_whitelist$ALT<-as.character(all_whitelist$ALT)
  #end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_whitelist$Start[x]) + max(nchar(all_whitelist$Ref[x]), nchar(all_whitelist$Alt[x]))}))-1
  
  all_whitelist$AAChange.refGene.x<-as.character(all_whitelist$AAChange.refGene.x)
