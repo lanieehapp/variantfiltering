@@ -680,7 +680,7 @@ get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
   
   end_pos<-unlist(lapply(1:nrow(filt.fix), function(x){as.numeric(filt.fix$POS[x]) + max(nchar(filt.fix$REF[x]), nchar(filt.fix$ALT[x]))}))
   
-  filt.bed<-cbind(filt.fix$CHROM, as.numeric(filt.fix$POS)-1, end.pos)
+  filt.bed<-cbind(filt.fix$CHROM, as.numeric(filt.fix$POS)-1, end_pos)
   filt.bed<-unique(filt.bed)
   
   write.table(filt.bed, sep="\t", file="filt_bed.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)

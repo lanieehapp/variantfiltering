@@ -30,6 +30,15 @@ all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3d", ":", x)))
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3db", "=", x)))
+
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3d", ":", x)))
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3db", "=", x)))
+
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3d", ":", x)))
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3db", "=", x)))
+
 
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
 
@@ -67,7 +76,7 @@ colnames(all.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "C
                      "clinical_significance")
 
 ###filtered variants###
-n<-nrow(all_whitelist)
+n<-nrow(all_filt_variants)
 end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_filt_variants$POS[x]) + max(nchar(all_filt_variants$REF[x]), nchar(all_filt_variants$ALT[x]))}))-1 
 
 aa_change<-strsplit(all_filt_variants$AAChange.refGene, ":")
@@ -100,36 +109,35 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
 
 
 # ###whitelist variants###
-# n<-nrow(all_whitelist)
-# #end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_whitelist$POS[x]) + max(nchar(all_whitelist$REF[x]), nchar(all_whitelist$ALT[x]))}))-1 
-# 
-# aa_change<-strsplit(all_whitelist$AAChange.refGene, ":")
-# c_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[4], sep=":"), paste("none"))}))
-# p_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[5], sep=":"), paste("none"))}))
-# exon_num<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[3]), paste("none"))}))
-# 
-# gnomad_genome<-all_whitelist[,grep("gnomad_genome_", colnames(all_whitelist))]
-# gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(x)})
-# gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
-# gnomad_genome_max[gnomad_genome_max==-Inf]<-0
-# var.type<-rep(NA, n)
-# var.type[nchar(all_whitelist$REF)>1]<-"DEL"
-# var.type[nchar(all_whitelist$ALT)>1]<-"INS"
-# var.type[is.na(var.type)]<-"SNP"
+ n<-nrow(all_whitelist)
+ #end_pos<-unlist(lapply(1:n, function(x){as.numeric(all_whitelist$Start[x]) + max(nchar(all_whitelist$Ref[x]), nchar(all_whitelist$Alt[x]))}))-1
+ aa_change<-strsplit(all_whitelist$AAChange.refGene, ":")
+ c_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[4], sep=":"), paste("none"))}))
+ p_change<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[2], x[5], sep=":"), paste("none"))}))
+ exon_num<-unlist(lapply(aa_change, function(x){ifelse(length(x)>1, paste(x[3]), paste("none"))}))
 
-# wl.maf<-data.frame(all_whitelist$Gene.refGene, rep("none", n), rep("davelab", n), rep("hg38", n), all_whitelist$Chr,
-#                      all_whitelist$Start, all_whitelist$End, rep("+", n), all_whitelist$Func.refGene, all_whitelist$ExonicFunc.refGene, var.type, 
-#                      all_whitelist$Ref,  all_whitelist$Alt, rep("none", n), all_whitelist$avsnp150, rep(samp, n), c_change, 
-#                      p_change, exon_num, all_whitelist[,grep(".nCallers", colnames(all_whitelist))],all_whitelist[,grep(".dpMax", colnames(all_whitelist))], 
-#                      all_whitelist[,grep(".afMax", colnames(all_whitelist))], all_whitelist$gnomad_exome_AF, all_whitelist$gnomad_exome_AF_popmax, 
-#                      all_whitelist$gnomad_genome_AF, gnomad_genome_max, all_whitelist[, grep("pop.freq.max.all", colnames(all_whitelist))], all_whitelist$CADD_phred,
-#                      all_whitelist$cadd16gt10, all_whitelist$Interpro_domain.x, all_whitelist$CLNSIG.x, all_whitelist[,grep(".DNA_", colnames(all_whitelist))], all_whitelist[,grep(".RNA_", colnames(all_whitelist))])
-# 
-# colnames(wl.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "Chromosome", "Start_Position", "End_Position", "Strand", 
-#                       "Variant_Location", "Variant_Classification", "Variant_Type", "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2", 
-#                       "dbSNP_RS", "Tumor_Sample_ID", "HVGSc", "HVGSp", "Exon_Number", "n_callers", "t_max_caller_depth", "t_max_caller_af", "gnomad_exome_all", 
-#                       "gnomad_exome_popmax", "gnomad_genome_all", "gnomad_genome_popmax", "all_db_popmax", "cadd_phred", "cadd16_gt10", "interpro_domain", 
-#                       "clinical_significance","validation_DNA_total_depth", "validation_DNA_alt_depth", "validation_DNA_af", "validation_RNA_total_depth", "validation_RNA_alt_depth", "validation_RNA_af", "validation_RNA_evidence")
+ gnomad_genome<-all_whitelist[,grep("gnomad_genome_", colnames(all_whitelist))]
+ gnomad_genome<-apply(gnomad_genome, 2, function(x){as.numeric(x)})
+ gnomad_genome_max<-apply(gnomad_genome, 1, max, na.rm=TRUE)
+ gnomad_genome_max[gnomad_genome_max==-Inf]<-0
+ var.type<-rep(NA, n)
+ var.type[nchar(all_whitelist$REF)>1]<-"DEL"
+ var.type[nchar(all_whitelist$ALT)>1]<-"INS"
+ var.type[is.na(var.type)]<-"SNP"
+
+ wl.maf<-data.frame(all_whitelist$Gene.refGene.x, rep("none", n), rep("davelab", n), rep("hg38", n), all_whitelist$Chr,
+                      all_whitelist$Start, all_whitelist$End, rep("+", n), all_whitelist$Func.refGene.x, all_whitelist$ExonicFunc.refGene.x, var.type,
+                      all_whitelist$Ref,  all_whitelist$Alt, rep("none", n), all_whitelist$avsnp150.x, rep(samp, n), c_change,
+                      p_change, exon_num, all_whitelist[,grep(".nCallers", colnames(all_whitelist))],all_whitelist[,grep(".dpMax", colnames(all_whitelist))],
+                      all_whitelist[,grep(".afMax", colnames(all_whitelist))], all_whitelist$gnomad_exome_AF.x, all_whitelist$gnomad_exome_AF_popmax,
+                      all_whitelist$gnomad_genome_AF.x, gnomad_genome_max, all_whitelist[, grep("pop.freq.max.all", colnames(all_whitelist))], all_whitelist$CADD_phred,
+                      all_whitelist$cadd16gt10, all_whitelist$Interpro_domain.x, all_whitelist$CLNSIG.x, all_whitelist[,grep(".DNA_", colnames(all_whitelist))], all_whitelist[,grep(".RNA_", colnames(all_whitelist))])
+
+ colnames(wl.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "Chromosome", "Start_Position", "End_Position", "Strand",
+                       "Variant_Location", "Variant_Classification", "Variant_Type", "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2",
+                       "dbSNP_RS", "Tumor_Sample_ID", "HVGSc", "HVGSp", "Exon_Number", "n_callers", "t_max_caller_depth", "t_max_caller_af", "gnomad_exome_all",
+                       "gnomad_exome_popmax", "gnomad_genome_all", "gnomad_genome_popmax", "all_db_popmax", "cadd_phred", "cadd16_gt10", "interpro_domain",
+                       "clinical_significance","validation_DNA_total_depth", "validation_DNA_alt_depth", "validation_DNA_af", "validation_RNA_total_depth", "validation_RNA_alt_depth", "validation_RNA_af")
 
 
 
