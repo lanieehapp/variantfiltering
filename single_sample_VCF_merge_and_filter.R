@@ -30,14 +30,15 @@ all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
-single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3d", ":", x)))
-single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3db", "=", x)))
 
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3d", ":", x)))
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3db", "=", x)))
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3d", ":", x)), stringsAsFactors = FALSE)
+single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("////x3db", "=", x)), stringsAsFactors = FALSE)
 
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3d", ":", x)))
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3db", "=", x)))
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3d", ":", x)), stringsAsFactors = FALSE)
+all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("////x3db", "=", x)), stringsAsFactors = FALSE)
+
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3d", ":", x)), stringsAsFactors = FALSE)
+all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("////x3db", "=", x)), stringsAsFactors = FALSE)
 
 
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
@@ -71,7 +72,7 @@ all.maf<-data.frame(single.sample.all$Gene.refGene, rep("none", n), rep("davelab
               p_change, exon_num, single.sample.all[,grep(".nCallers", colnames(single.sample.all))],single.sample.all[,grep(".dpMax", colnames(single.sample.all))], 
               single.sample.all[,grep(".afMax", colnames(single.sample.all))], single.sample.all$gnomad_exome_AF, single.sample.all$gnomad_exome_AF_popmax, 
               single.sample.all$gnomad_genome_AF, gnomad_genome_max, single.sample.all[, grep("pop.freq.max.all", colnames(single.sample.all))], single.sample.all$CADD_phred,
-              single.sample.all$cadd16gt10, single.sample.all$Interpro_domain, single.sample.all$CLNSIG)
+              single.sample.all$cadd16gt10, single.sample.all$Interpro_domain, single.sample.all$CLNSIG, stringsAsFactors = FALSE)
 
 colnames(all.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "Chromosome", "Start_Position", "End_Position", "Strand", 
                      "Variant_Location", "Variant_Classification", "Variant_Type", "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2", 
@@ -108,7 +109,7 @@ filt.maf<-data.frame(all_filt_variants$Gene.refGene, rep("none", n), rep("davela
                     p_change, exon_num, all_filt_variants[,grep(".nCallers", colnames(all_filt_variants))],all_filt_variants[,grep(".dpMax", colnames(all_filt_variants))], 
                     all_filt_variants[,grep(".afMax", colnames(all_filt_variants))], all_filt_variants$gnomad_exome_AF, all_filt_variants$gnomad_exome_AF_popmax, 
                     all_filt_variants$gnomad_genome_AF, gnomad_genome_max, all_filt_variants[, grep("pop.freq.max.all", colnames(all_filt_variants))], all_filt_variants$CADD_phred,
-                    all_filt_variants$cadd16gt10, all_filt_variants$Interpro_domain, all_filt_variants$CLNSIG, all_filt_variants[,grep(".RNA_", colnames(all_filt_variants))])
+                    all_filt_variants$cadd16gt10, all_filt_variants$Interpro_domain, all_filt_variants$CLNSIG, all_filt_variants[,grep(".RNA_", colnames(all_filt_variants))], stringsAsFactors = FALSE)
 
 colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "Chromosome", "Start_Position", "End_Position", "Strand", 
                      "Variant_Location", "Variant_Classification", "Variant_Type", "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2", 
@@ -146,7 +147,7 @@ colnames(filt.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "
                       p_change, exon_num, all_whitelist[,grep(".nCallers", colnames(all_whitelist))],all_whitelist[,grep(".dpMax", colnames(all_whitelist))],
                       all_whitelist[,grep(".afMax", colnames(all_whitelist))], all_whitelist$gnomad_exome_AF.x, all_whitelist$gnomad_exome_AF_popmax,
                       all_whitelist$gnomad_genome_AF.x, gnomad_genome_max, all_whitelist[, grep("pop.freq.max.all", colnames(all_whitelist))], all_whitelist$CADD_phred,
-                      all_whitelist$cadd16gt10, all_whitelist$Interpro_domain.x, all_whitelist$CLNSIG.x, all_whitelist[,grep(".DNA_", colnames(all_whitelist))], all_whitelist[,grep(".RNA_", colnames(all_whitelist))])
+                      all_whitelist$cadd16gt10, all_whitelist$Interpro_domain.x, all_whitelist$CLNSIG.x, all_whitelist[,grep(".DNA_", colnames(all_whitelist))], all_whitelist[,grep(".RNA_", colnames(all_whitelist))], stringsAsFactors = FALSE)
 
  colnames(wl.maf)<-c("Hugo_Symbol", "Entrez_Gene_Id", "Center", "NCBI_Build", "Chromosome", "Start_Position", "End_Position", "Strand",
                        "Variant_Location", "Variant_Classification", "Variant_Type", "Reference_Allele", "Tumor_Seq_Allele1", "Tumor_Seq_Allele2",

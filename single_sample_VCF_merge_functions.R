@@ -46,7 +46,7 @@ three.caller.merge<-function(samp, file.list){
   
   all.data.merged<-merge.vcfs(samp,all.hc.data, all.dv.data, all.s2.data)
   gt.summary<-get.gt.summary(all.data.merged)
-  all.fix.merged<-data.frame(all.data.merged[[1]])
+  all.fix.merged<-data.frame(all.data.merged[[1]], stringsAsFactors = FALSE)
   all.info.merged<-all.data.merged[[2]]
   all.gt.merged<-all.data.merged[[3]]
   
@@ -60,7 +60,7 @@ three.caller.merge<-function(samp, file.list){
   
   ##remove deep variant double entry variants
   if(nrow(all.fix.merged) != nrow(all.gt.merged)){
-    tmp<-data.frame(table(all.gt.merged$CHROM_POS_REF_ALT))
+    tmp<-data.frame(table(all.gt.merged$CHROM_POS_REF_ALT), stringsAsFactors = FALSE)
     bad.vars<-as.character(tmp[tmp$Freq>1,1])
   }
   if(exists("bad.vars")){
@@ -464,7 +464,7 @@ get.gt.summary<-function(all.data.merged){
   
   
   
-  samp.meta<-data.frame(ncallers,unlist(af.max), dp.max)
+  samp.meta<-data.frame(ncallers,unlist(af.max), dp.max, stringsAsFactors = FALSE)
   
   colnames(samp.meta)<-c("nCallers", "afMax", "dpMax")
   return(samp.meta)
@@ -568,7 +568,7 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
   tmp<-dna_whitelist[dna_whitelist$G_evidence,]
   tmp$Alt_depth<-tmp$G_FS+tmp$G_RS
   tmp$AF<-tmp$Alt_depth/tmp$Depth
-  vars<-data.frame(rbind(vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)))
+  vars<-data.frame(rbind(vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)), stringsAsFactors = FALSE)
   
   
   colnames(vars)<-c("Chr", "Pos", "Ref", "Alt", "DNA_depth_total", "DNA_depth_alt", "DNA_AF")
@@ -628,7 +628,7 @@ get_whitelist_vars_rna<-function(rna_bam, ref){
   tmp<-rna_whitelist[rna_whitelist$G_evidence,]
   tmp$Alt_depth<-tmp$G_FS+tmp$G_RS
   tmp$AF<-tmp$Alt_depth/tmp$Depth
-  rna_vars<-data.frame(rbind(rna_vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)))
+  rna_vars<-data.frame(rbind(rna_vars, cbind(tmp$Chr, tmp$Pos, tmp$Ref, rep("G", nrow(tmp)), tmp$Depth, tmp$Alt_depth, tmp$AF)), stringsAsFactors = FALSE)
   
   colnames(rna_vars)<-c("Chr", "Pos", "Ref", "Alt", "RNA_depth_total", "RNA_depth_alt", "RNA_AF")
   
