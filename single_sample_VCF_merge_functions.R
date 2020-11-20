@@ -134,9 +134,9 @@ three.caller.merge<-function(samp, file.list){
   all.info.filt$Depth_Filter<-all.gt.filt$dpMax>30
   
   
-  all.fix.filt<-all.fix.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter,]
-  all.gt.filt<-all.gt.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter,]
-  all.info.filt<-all.info.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter,]
+  all.fix.filt<-all.fix.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter & !(all.info.filt$whitelist),]
+  all.gt.filt<-all.gt.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter & !(all.info.filt$whitelist),]
+  all.info.filt<-all.info.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter & !(all.info.filt$whitelist),]
   
   all.fix.wl<-all.fix.merged[all.info.merged$whitelist,]
   all.info.wl<-all.info.merged[all.info.merged$whitelist,]
