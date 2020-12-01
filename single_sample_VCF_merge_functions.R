@@ -527,7 +527,7 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
   
   system(comm)
   
-  dna_whitelist<-read.csv(file="dna_whitelist.txt", sep="\t", stringsAsFactors = FALSE, header=FALSE)
+  dna_whitelist<-read.csv(file="dna_whitelist.txt", sep="\t", stringsAsFactors = FALSE, header=FALSE,  quote="")
   colnames(dna_whitelist)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
   
   dna_whitelist$ref_FS<-str_count(dna_whitelist$mpileup, pattern="[.]")
@@ -585,7 +585,7 @@ get_whitelist_vars_rna<-function(rna_bam, ref){
 
   system(comm)
   
-  rna_whitelist<-read.csv(file="rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE)
+  rna_whitelist<-read.csv(file="rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE, header = FALSE, quote="")
   
   colnames(rna_whitelist)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
   
