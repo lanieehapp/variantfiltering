@@ -1,5 +1,5 @@
 # Base Image
-FROM r-base:3.5.2
+FROM r-base:4.0.2
 
 # Maintainer
 MAINTAINER DaveLab <lab.dave@gmail.com>
@@ -41,15 +41,15 @@ WORKDIR /usr/local/bin
 
 
 # install R required dependencies
-RUN R --vanilla -e 'install.packages(c("devtools", "stringr", "plyr","doParallel", "data.table", "qqman", "bedr"), repos="http://cran.us.r-project.org")'
+RUN R --vanilla -e 'install.packages(c("devtools", "stringr", "plyr","doParallel", "data.table", "bedr"), repos="http://cran.us.r-project.org")'
 RUN R --vanilla -e 'devtools::install_github(repo="knausb/vcfR")'
 
 
-# clone disco-wave repo
+# clone variantfiltering repo
 ADD https://api.github.com/repos/lanieehapp/variantfiltering/git/refs/heads/ version.json
 RUN git clone https://github.com/lanieehapp/variantfiltering.git
 
-# add disco-wave repo to SYSPATH
+# add variantfiltering repo to SYSPATH
 ENV PATH variantfiltering:$PATH
 
 # change the permission of the repo

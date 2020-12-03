@@ -7,7 +7,6 @@ library(plyr)
 library(parallel)
 library(doParallel)
 library(data.table)
-library(qqman)
 library(bedr)
 
 
@@ -35,11 +34,11 @@ three.caller.merge<-function(samp, file.list){
   
   print("After initial merge:")
   print("fix.filt:")
-  print(head(all.fix.filt$CHROM_POS_REF_ALT))
+  print(head(all.fix.merged$CHROM_POS_REF_ALT))
   print("info.filt:")
-  print(head(all.info.filt$CHROM_POS_REF_ALT))
+  print(head(all.info.merged$CHROM_POS_REF_ALT))
   print("gt.filt:")
-  print(head(all.gt.filt$CHROM_POS_REF_ALT))
+  print(head(all.gt.merged$CHROM_POS_REF_ALT))
   
   all.gt.merged<-data.frame(all.gt.merged[,1],gt.summary, all.gt.merged[,2:ncol(all.gt.merged)], stringsAsFactors = FALSE, check.names = FALSE)
   colnames(all.gt.merged)[1]<-"CHROM_POS_REF_ALT"
