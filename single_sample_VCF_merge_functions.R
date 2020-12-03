@@ -11,27 +11,6 @@ library(qqman)
 library(bedr)
 
 
-single.sample.merge<-function(samp, path){
-  
-  
-  file.list<-c("~/tmp/tmp_HC.vcf.gz", "~/tmp/tmp_S2.vcf.gz", "~/tmp/tmp_DV.vcf.gz")
-  
-  single.sample.merged<-three.caller.merge(samp, file.list)
-  
-  return(single.sample.merged)
-}
-
-get_vcf = function(file=file, caller=caller) {
-  if(startsWith(file, "gs")){
-    comm = paste("/Users/laniehapp/google-cloud-sdk/bin/gsutil cp ",file, " ~/tmp/tmp_", caller,".vcf.gz",sep="")
-    
-  }
-  if(startsWith(file, "s3")){
-    comm = paste("/usr/local/bin/aws s3 cp ", file, " ~/tmp/tmp_", caller,".vcf.gz",sep="")
-  }
-  print(comm)
-  system(comm)
-}
 
 three.caller.merge<-function(samp, file.list){
   
@@ -45,20 +24,21 @@ three.caller.merge<-function(samp, file.list){
   all.dv.data<-parse.dv.vcf(all.data)
   
   all.data.merged<-merge.vcfs(samp,all.hc.data, all.dv.data, all.s2.data)
+  
+  
+  
   gt.summary<-get.gt.summary(all.data.merged)
   all.fix.merged<-data.frame(all.data.merged[[1]], stringsAsFactors = FALSE)
+  all.fix.merged<-all.fix.merged[order(all.fix.merged$CHROM_POS_REF_ALT),]
   all.info.merged<-all.data.merged[[2]]
   all.gt.merged<-all.data.merged[[3]]
+  
+  
   
   all.gt.merged<-data.frame(all.gt.merged[,1],gt.summary, all.gt.merged[,2:ncol(all.gt.merged)], stringsAsFactors = FALSE, check.names = FALSE)
   colnames(all.gt.merged)[1]<-"CHROM_POS_REF_ALT"
   
   
-  
-  #put fix in same order as gt and info
-  all.fix.merged<-all.fix.merged[order(all.fix.merged$CHROM_POS_REF_ALT),]
-  all.info.merged<-all.info.merged[order(all.info.merged$CHROM_POS_REF_ALT),]
-  all.gt.merged<-all.gt.merged[order(all.gt.merged$CHROM_POS_REF_ALT),]
   
   ##remove deep variant double entry variants
   if(nrow(all.fix.merged) != nrow(all.gt.merged)){
@@ -73,17 +53,10 @@ three.caller.merge<-function(samp, file.list){
     }
   }
   
-  all.info.merged<-all.info.merged[!grepl("ERCC", all.info.merged$CHROM_POS_REF_ALT),]
-  all.gt.merged<-all.gt.merged[!grepl("ERCC", all.gt.merged$CHROM_POS_REF_ALT),]
-  all.fix.merged<-all.fix.merged[!grepl("ERCC", all.fix.merged$CHROM),]
+  all.info.merged<-all.info.merged[!grepl("ERCC|GL", all.info.merged$CHROM_POS_REF_ALT),]
+  all.gt.merged<-all.gt.merged[!grepl("ERCC|GL", all.gt.merged$CHROM_POS_REF_ALT),]
+  all.fix.merged<-all.fix.merged[!grepl("ERCC|GL", all.fix.merged$CHROM),]
   
-  all.info.merged<-all.info.merged[!grepl("GL000251.2", all.info.merged$CHROM_POS_REF_ALT),]
-  all.gt.merged<-all.gt.merged[!grepl("GL000251.2", all.gt.merged$CHROM_POS_REF_ALT),]
-  all.fix.merged<-all.fix.merged[!grepl("GL000251.2", all.fix.merged$CHROM),]
-  
-  all.info.merged<-all.info.merged[!grepl("GL000253.2", all.info.merged$CHROM_POS_REF_ALT),]
-  all.gt.merged<-all.gt.merged[!grepl("GL000253.2", all.gt.merged$CHROM_POS_REF_ALT),]
-  all.fix.merged<-all.fix.merged[!grepl("GL000253.2", all.fix.merged$CHROM),]
   
   all.fix.merged$REF<-as.character(all.fix.merged$REF)
   all.fix.merged$ALT<-as.character(all.fix.merged$ALT)
@@ -95,8 +68,8 @@ three.caller.merge<-function(samp, file.list){
   
   ##apply basic filter and caller filter
   all.fix.filt<-all.fix.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
-  all.info.filt<-all.info.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
   all.gt.filt<-all.gt.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
+  all.info.filt<-all.info.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
   
   
   ##calculate filter for good, rare variants in windows 
@@ -105,6 +78,8 @@ three.caller.merge<-function(samp, file.list){
   for(chr in unique(all.fix.filt$CHROM)){
     
     vars<-all.fix.filt[all.fix.filt$CHROM==chr,]
+    vars$POS<-as.numeric(vars$POS)
+    vars<-vars[order(vars$POS),]
     
     vars$CLUST<-NA
     if(nrow(vars)==1){
@@ -519,6 +494,7 @@ get.annovar.filters<-function(all.fix.merged){
   return(all.filters[,2:9])
   
 }
+
 
 
 get_whitelist_vars_dna<-function(dna_bam, ref){

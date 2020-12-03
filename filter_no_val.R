@@ -186,10 +186,10 @@ save(all_whitelist, file=args[13])
 # write.table(all.maf, file=args[15], row.names=FALSE, quote=FALSE, sep="\t")
 # write.table(filt.maf, file=args[16], row.names=FALSE, quote=FALSE, sep="\t")
 # write.table(wl.maf, file=args[17], row.names=FALSE, quote=FALSE, sep="\t")
-
-system("cp dna_whitelist.txt /data/")
-system("cp rna_whitelist.txt /data/")
-system("cp rna_filt.txt /data/")
+# 
+# system("cp dna_whitelist.txt /data/")
+# system("cp rna_whitelist.txt /data/")
+# system("cp rna_filt.txt /data/")
 
 
 
