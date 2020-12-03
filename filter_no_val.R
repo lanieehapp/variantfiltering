@@ -32,6 +32,10 @@ single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], s
 all_whitelist<-cbind(single.sample.merged[[7]], single.sample.merged[[8]], single.sample.merged[[9]])
 all_filt_variants<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]])
 
+
+
+
+
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
 

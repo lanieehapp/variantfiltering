@@ -33,7 +33,13 @@ three.caller.merge<-function(samp, file.list){
   all.info.merged<-all.data.merged[[2]]
   all.gt.merged<-all.data.merged[[3]]
   
-  
+  print("After initial merge:")
+  print("fix.filt:")
+  print(head(all.fix.filt$CHROM_POS_REF_ALT))
+  print("info.filt:")
+  print(head(all.info.filt$CHROM_POS_REF_ALT))
+  print("gt.filt:")
+  print(head(all.gt.filt$CHROM_POS_REF_ALT))
   
   all.gt.merged<-data.frame(all.gt.merged[,1],gt.summary, all.gt.merged[,2:ncol(all.gt.merged)], stringsAsFactors = FALSE, check.names = FALSE)
   colnames(all.gt.merged)[1]<-"CHROM_POS_REF_ALT"
@@ -71,6 +77,13 @@ three.caller.merge<-function(samp, file.list){
   all.gt.filt<-all.gt.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
   all.info.filt<-all.info.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
   
+  print("After basic and caller filters:")
+  print("fix.filt:")
+  print(head(all.fix.filt$CHROM_POS_REF_ALT))
+  print("info.filt:")
+  print(head(all.info.filt$CHROM_POS_REF_ALT))
+  print("gt.filt:")
+  print(head(all.gt.filt$CHROM_POS_REF_ALT))
   
   ##calculate filter for good, rare variants in windows 
   all.vars<-NULL
@@ -115,11 +128,19 @@ three.caller.merge<-function(samp, file.list){
   all.gt.filt<-all.gt.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter ,]
   all.info.filt<-all.info.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter ,]
   
+  
+  
   all.fix.wl<-all.fix.merged[all.info.merged$whitelist,]
   all.info.wl<-all.info.merged[all.info.merged$whitelist,]
   all.gt.wl<-all.gt.merged[all.info.merged$whitelist,]
   
-  
+  print("Before returning data, after applying depth and cluster filter:")
+  print("fix.filt:")
+  print(head(all.fix.filt$CHROM_POS_REF_ALT))
+  print("info.filt:")
+  print(head(all.info.filt$CHROM_POS_REF_ALT))
+  print("gt.filt:")
+  print(head(all.gt.filt$CHROM_POS_REF_ALT))
   
   #colnames(all.gt.merged)[2:ncol(all.gt.merged)]<-paste(samp, colnames(all.gt.merged)[2:ncol(all.gt.merged)], sep=".")
   #colnames(all.info.merged)[2:ncol(all.info.merged)]<-paste(samp, colnames(all.info.merged)[2:ncol(all.info.merged)], sep=".")
