@@ -668,6 +668,11 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   
   all_whitelist_merged<-cbind(all_whitelist_x, all_whitelist_other)
   
+  all_whitelist_a<-all_whitelist_merged[,grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged))]
+  all_whitelist_b<-all_whitelist_merged[,!(grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged)))]
+  
+  all_whitelist_merged<-cbind(all_whitelist_a, all_whitelist_b)
+  
   return(all_whitelist_merged)
   
 }
