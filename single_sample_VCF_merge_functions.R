@@ -794,7 +794,7 @@ get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
     
   }
   
-  colnames(all_rna)<-paste0(samp, ".", colnames(all_rna))
+  #colnames(all_rna)<-paste0(samp, ".", colnames(all_rna))
   return(all_rna)
 }
 
