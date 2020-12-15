@@ -43,6 +43,9 @@ all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\
 single.sample.all$Sample_ID<-samp
 all_whitelist$Sample_ID<-samp
 all_filt_variants$Sample_ID<-samp
+
+colnames(all_whitelist)[1]<-"CHROM_POS_REF_ALT"
+
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
 
 ###all variants###
