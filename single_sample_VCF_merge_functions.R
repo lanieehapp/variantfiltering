@@ -673,6 +673,20 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   
   all_whitelist_merged<-cbind(all_whitelist_a, all_whitelist_b)
   
+  #consolidated chrom,pos,ref,alt from merging
+  bad_cols<-c("CHROM", "POS", "REF", "ALT", "Chr", "Start", "End", "Ref", "Alt")
+  
+  all_whitelist_merged<-all_whitelist_merged[,!(colnames(all_whitelist_merged) %in% bad_cols)]
+  
+  colnames(all_whitelist_merged)[1]<-"CHROM_POS_REF_ALT"
+  
+  tmp<-unlist(strsplit(all_whitelist_merged[,1], "-"))
+  tmp<-t(data.frame(lapply(all_whitelist_merged[,1], function(x) {unlist(strsplit(x, "-"))})))
+  
+  all_whitelist_merged<-cbind(tmp, all_whitelist_merged)
+  
+  colnames(all_whitelist_merged)[1:4]<-c("CHROM", "POS", "REF", "ALT")
+  
   return(all_whitelist_merged)
   
 }
