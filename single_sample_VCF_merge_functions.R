@@ -120,7 +120,7 @@ three.caller.merge<-function(samp, file.list){
   all.info.filt$AF_Filter<-all.gt.filt$afMax<0.25
   
   ##depth filter
-  all.info.filt$Depth_Filter<-all.gt.filt$dpMax>30
+  all.info.filt$Depth_Filter<-all.gt.filt$dpMax>9
   
   
   all.fix.filt<-all.fix.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter ,]

@@ -24,9 +24,27 @@ source("single_sample_VCF_merge_functions.R")
 
 single.sample.merged<-three.caller.merge(samp, path)
 
+###### return header only if no variants pass filtering #####
+if(nrow(single.sample.merged[[4]])==0){
+        
+        
+        tmp<-read.csv(text="RNA_depth_total,RNA_depth_alt,RNA_AF,RNA_evidence,Sample_ID")
+        all_filt_variants<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]], tmp)
+}
+
+if(nrow(single.sample.merged[[4]])>0){
+        all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
+        
+        all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
+        all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
+        all_filt_variants$Sample_ID<-samp
+        
+}
+
+
 all_whitelist<-merge_whitelists(dna_bam, rna_bam, ref, single.sample.merged)
 
-all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
+
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
@@ -37,12 +55,11 @@ single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\
 all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
 all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
 
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
+
 
 single.sample.all$Sample_ID<-samp
 all_whitelist$Sample_ID<-samp
-all_filt_variants$Sample_ID<-samp
+
 
 
 ######put all variants, filtered variants, and whitelist variants into MAF format #########3
@@ -184,15 +201,6 @@ save(single.sample.merged, file=args[11])
 #save(all_whitelist, file="all_whitelist.RData")
 save(all_filt_variants, file=args[12])
 save(all_whitelist, file=args[13])
-
-#maf files
-# write.table(all.maf, file=args[15], row.names=FALSE, quote=FALSE, sep="\t")
-# write.table(filt.maf, file=args[16], row.names=FALSE, quote=FALSE, sep="\t")
-# write.table(wl.maf, file=args[17], row.names=FALSE, quote=FALSE, sep="\t")
-# 
-# system("cp dna_whitelist.txt /data/")
-# system("cp rna_whitelist.txt /data/")
-# system("cp rna_filt.txt /data/")
 
 
 
