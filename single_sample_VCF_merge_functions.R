@@ -637,19 +637,7 @@ get_whitelist_vars_rna<-function(rna_bam, ref){
 }
 
 merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
-  dna_whitelist<-get_whitelist_vars_dna(dna_bam, ref)
-  rna_whitelist<-get_whitelist_vars_rna(rna_bam, ref)
   
-  merged_whitelist<-merge(dna_whitelist, rna_whitelist, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
-  merged_whitelist<-cbind(merged_whitelist$CHROM_POS_REF_ALT, merged_whitelist[,grep("DNA|RNA", colnames(merged_whitelist))])
-  colnames(merged_whitelist)[1]<-"CHROM_POS_REF_ALT"
-  #colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
-  
-  load("filtered_whitelist_09302020.RData")
-  #load("variantFilter/filtered_whitelist_09302020.RData")
-  
-  
-  all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
   
   
   if(nrow(single.sample.merged[[4]])==0){
@@ -658,6 +646,20 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   }
   
   if(nrow(single.sample.merged[[7]])>0){
+    dna_whitelist<-get_whitelist_vars_dna(dna_bam, ref)
+    rna_whitelist<-get_whitelist_vars_rna(rna_bam, ref)
+    
+    merged_whitelist<-merge(dna_whitelist, rna_whitelist, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
+    merged_whitelist<-cbind(merged_whitelist$CHROM_POS_REF_ALT, merged_whitelist[,grep("DNA|RNA", colnames(merged_whitelist))])
+    colnames(merged_whitelist)[1]<-"CHROM_POS_REF_ALT"
+    #colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
+    
+    load("filtered_whitelist_09302020.RData")
+    #load("variantFilter/filtered_whitelist_09302020.RData")
+    
+    
+    all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
+    
     all_whitelist_discovery<-cbind(single.sample.merged[[7]], single.sample.merged[[8]], single.sample.merged[[9]])
     CHROM_POS_REF_ALT<-all_whitelist_discovery$CHROM_POS_REF_ALT
     all_whitelist_discovery<-cbind(CHROM_POS_REF_ALT, all_whitelist_discovery[,!(grepl("CHROM_POS", colnames(all_whitelist_discovery)))])
