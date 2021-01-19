@@ -44,6 +44,18 @@ if(nrow(single.sample.merged[[4]])>0){
 
 all_whitelist<-merge_whitelists(dna_bam, rna_bam, ref, single.sample.merged)
 
+if(nrow(single.sample.merged[[7]])==0){
+        all_whitelist<-merge_whitelists(dna_bam, rna_bam, ref, single.sample.merged)   
+}
+
+if(nrow(single.sample.merged[[7]])>0){
+        all_whitelist<-merge_whitelists(dna_bam, rna_bam, ref, single.sample.merged)
+        
+        all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
+        all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
+        
+        all_whitelist$Sample_ID<-samp
+}
 
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
@@ -52,13 +64,11 @@ single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], s
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
 
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
 
 
 
 single.sample.all$Sample_ID<-samp
-all_whitelist$Sample_ID<-samp
+
 
 
 
