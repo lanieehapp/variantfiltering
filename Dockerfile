@@ -6,35 +6,15 @@ MAINTAINER DaveLab <lab.dave@gmail.com>
 
 # update the OS related packages
 RUN apt-get update && apt-get install -y \
-    build-essential \
-    libnss-sss \
-    curl \
-    vim \
-    devscripts \
-    less \
-    wget \
-    unzip \
-    cmake \
-    python3 \
     gawk \
-    zlib1g-dev \
-    libncurses5-dev \
-    libncursesw5-dev \
-    libbz2-dev \
-    liblzma-dev \
-    bzip2 \
-    libssl-dev \
+    unzip \
+    less \
     git \
-    autoconf \
-    bsdmainutils \
-    bedtools \
-    gcc-8-base \
-    libmpx2 \		
-    libgcc-8-dev \
-    bedops \
-    tabix \
+    build-essential \
     libcurl4-gnutls-dev \
     libxml2-dev \
+    libssl-dev \
+    bedtools \
     parallel 	
 # install Python libraries
 WORKDIR /usr/local/bin
