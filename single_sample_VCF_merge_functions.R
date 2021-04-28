@@ -657,17 +657,24 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   all_whitelist_discovery<-cbind(CHROM_POS_REF_ALT, all_whitelist_discovery[,!(grepl("CHROM_POS", colnames(all_whitelist_discovery)))])
   
   all_whitelist_merged<-merge(all_whitelist_discovery, all_whitelist_annot, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
-  all_whitelist_x<-all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))]
-  all_whitelist_y<-all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))]
-  all_whitelist_other<-all_whitelist_merged[,!(grepl("[.]x|[.]y", colnames(all_whitelist_merged)))]
   
-  for(i in 1:nrow(all_whitelist_merged)){
-    if(is.na(all_whitelist_x[i,1])){
-      all_whitelist_x[i,]<-all_whitelist_y[i,]
+  
+  #handle case where discovery had no whitelist variants
+  if (ncol(all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))])>0 & ncol(all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))])>0){
+    all_whitelist_x<-all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))]
+    all_whitelist_y<-all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))]
+    all_whitelist_other<-all_whitelist_merged[,!(grepl("[.]x|[.]y", colnames(all_whitelist_merged)))]
+    
+    for(i in 1:nrow(all_whitelist_merged)){
+      if(is.na(all_whitelist_x[i,1])){
+        all_whitelist_x[i,]<-all_whitelist_y[i,]
+      }
     }
+    
+    all_whitelist_merged<-cbind(all_whitelist_x, all_whitelist_other)
   }
   
-  all_whitelist_merged<-cbind(all_whitelist_x, all_whitelist_other)
+  
   
   all_whitelist_a<-all_whitelist_merged[,grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged))]
   all_whitelist_b<-all_whitelist_merged[,!(grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged)))]
