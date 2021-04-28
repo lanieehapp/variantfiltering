@@ -5,7 +5,7 @@ FROM r-base:4.0.2
 MAINTAINER DaveLab <lab.dave@gmail.com>
 
 # update the OS related packages
-RUN apt-get update -y && apt-get install -y \
+RUN apt-get update && && apt-get upgrade -y && apt-get dist-upgrade -y && apt-get install -y \
     build-essential \
     libnss-sss \
     curl \
