@@ -660,7 +660,8 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   
   
   #handle case where discovery had no whitelist variants
-  if (ncol(all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))])>0 & ncol(all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))])>0){
+  #handle case where discovery has no whitelist variants
+  if (nrow(all_whitelist_merged)>0 & ncol(all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))])>0 & ncol(all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))])>0){
     all_whitelist_x<-all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))]
     all_whitelist_y<-all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))]
     all_whitelist_other<-all_whitelist_merged[,!(grepl("[.]x|[.]y", colnames(all_whitelist_merged)))]
@@ -672,6 +673,16 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
     }
     
     all_whitelist_merged<-cbind(all_whitelist_x, all_whitelist_other)
+  }
+  
+  #handle case where no whitelist variants exist
+  if(nrow(all_whitelist_merged)==0){
+    print("No whitelist variants found")
+    load("whitelist_column_names.RData")
+    
+    all_whitelist_merged<-data.frame(matrix(NA, nrow=0, ncol=207))
+    colnames(all_whitelist_merged)<-wl_cols
+    return(all_whitelist_merged)
   }
   
   

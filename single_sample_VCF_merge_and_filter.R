@@ -27,12 +27,15 @@ single.sample.merged<-three.caller.merge(samp, path)
 ###### return header only if no variants pass filtering #####
 if(nrow(single.sample.merged[[4]])==0){
         
-        
+        print("No variants pass filtering")
         tmp<-read.csv(text="RNA_depth_total,RNA_depth_alt,RNA_AF,RNA_evidence,Sample_ID")
         all_filt_variants<-cbind(single.sample.merged[[4]], single.sample.merged[[5]], single.sample.merged[[6]], tmp)
 }
 
 if(nrow(single.sample.merged[[4]])>0){
+        
+        "Variants pass filtering - now running DNA validation"
+        
         all_filt_variants<-merge_validation(rna_bam, ref, single.sample.merged, samp)
         
         all_filt_variants <- data.frame(lapply(all_filt_variants, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
@@ -45,10 +48,15 @@ if(nrow(single.sample.merged[[4]])>0){
 all_whitelist<-merge_whitelists(dna_bam, rna_bam, ref, single.sample.merged)
 
 
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
-all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
+if(nrow(all_whitelist)>0){
+        print("Whitelist variants found")
+        all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
+        all_whitelist <- data.frame(lapply(all_whitelist, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
+        all_whitelist$Sample_ID<-samp
+        
+}
 
-all_whitelist$Sample_ID<-samp
+
 
 
 
