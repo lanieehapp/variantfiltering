@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     libssl-dev \
     bedtools \
-    parallel 	
+    parallel \
+    samtools 	
 # install Python libraries
 WORKDIR /usr/local/bin
 
