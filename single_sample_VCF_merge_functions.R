@@ -150,6 +150,7 @@ three.caller.merge<-function(samp, file.list){
   #colnames(all.gt.wl)[2:ncol(all.gt.wl)]<-paste(samp, colnames(all.gt.wl)[2:ncol(all.gt.wl)], sep=".")
   #colnames(all.info.wl)[2:ncol(all.info.wl)]<-paste(samp, colnames(all.info.wl)[2:ncol(all.info.wl)], sep=".")
   
+  
   return(list(all.fix.merged, all.info.merged, all.gt.merged, all.fix.filt, all.info.filt, all.gt.filt, all.fix.wl, all.info.wl,all.gt.wl))
   
 }

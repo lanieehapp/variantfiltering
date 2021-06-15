@@ -62,15 +62,31 @@ if(nrow(all_whitelist)>0){
 
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
+#put all columns that mess up indels at end of file
+bad_cols<-c("SNVHPOL", "HC_BaseQRankSum", "HC_ClippingRankSum", "HC_MQRankSum", "HC_ReadPosRankSum", "S2_SNVHPOL", "S2_CIGAR", "S2_RU", "S2_REFREP", "S2_IDREP", "S2_DPI", "S2_AD", "S2_ADF", "S2_ADR", "S2_FT", "S2_PL", "S2_PS")
+
+#all variants
+all_good<-single.sample.all[,!(colnames(single.sample.all) %in% bad_cols)]
+all_bad<-single.sample.all[,colnames(single.sample.all) %in% bad_cols]
+
+single.sample.all<-cbind(all_good, all_bad)
 
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3d", ":", x)), stringsAsFactors = FALSE)
 single.sample.all <- data.frame(lapply(single.sample.all, function(x) gsub("\\\\x3b", "=", x)), stringsAsFactors = FALSE)
 
-
-
-
 single.sample.all$Sample_ID<-samp
 
+#filtered variants
+all_good<-all_filt_variants[,!(colnames(all_filt_variants) %in% bad_cols)]
+all_bad<-all_filt_variants[,colnames(all_filt_variants) %in% bad_cols]
+
+all_filt_variants<-cbind(all_good, all_bad)
+
+#whitelist
+all_good<-all_whitelist[,!(colnames(all_whitelist) %in% bad_cols)]
+all_bad<-all_whitelist[,colnames(all_whitelist) %in% bad_cols]
+
+all_whitelist<-cbind(all_good, all_bad)
 
 
 
