@@ -63,11 +63,18 @@ if(nrow(all_whitelist)>0){
 single.sample.all<-cbind(single.sample.merged[[1]], single.sample.merged[[2]], single.sample.merged[[3]])
 
 #put all columns that mess up indels at end of file
-bad_cols<-c("SNVHPOL", "HC_BaseQRankSum", "HC_ClippingRankSum", "HC_MQRankSum", "HC_ReadPosRankSum", "S2_SNVHPOL", "S2_CIGAR", "S2_RU", "S2_REFREP", "S2_IDREP", "S2_DPI", "S2_AD", "S2_ADF", "S2_ADR", "S2_FT", "S2_PL", "S2_PS")
+bad_cols<-c("HC_BaseQRankSum", "HC_ClippingRankSum", "HC_MQRankSum", "HC_ReadPosRankSum", "S2_SNVHPOL", "S2_CIGAR", "S2_RU", "S2_REFREP", "S2_IDREP", "S2_DPI", "S2_AD", "S2_ADF", "S2_ADR", "S2_FT", "S2_PL", "S2_PS")
 
 #all variants
 all_good<-single.sample.all[,!(colnames(single.sample.all) %in% bad_cols)]
 all_bad<-single.sample.all[,colnames(single.sample.all) %in% bad_cols]
+
+if("SNVHPOL" %in% colnames(all_bad)){
+        colnames(all_bad)[colnames(all_bad)=="SNVHPOL"]<-"S2_SNVHPOL"
+        
+        correct_order<-cbind(all_bad[,2:5], all_bad[,1], all_bad[,11:15], all_bad[,10], all_bad[,16])
+        all_bad<-correct_order
+}
 
 single.sample.all<-cbind(all_good, all_bad)
 
