@@ -43,8 +43,6 @@ three.caller.merge<-function(samp, file.list){
   all.gt.merged<-data.frame(all.gt.merged[,1],gt.summary, all.gt.merged[,2:ncol(all.gt.merged)], stringsAsFactors = FALSE, check.names = FALSE)
   colnames(all.gt.merged)[1]<-"CHROM_POS_REF_ALT"
   
-  
-  
   ##remove deep variant double entry variants
   if(nrow(all.fix.merged) != nrow(all.gt.merged)){
     tmp<-data.frame(table(all.gt.merged$CHROM_POS_REF_ALT), stringsAsFactors = FALSE)
@@ -62,14 +60,9 @@ three.caller.merge<-function(samp, file.list){
   all.gt.merged<-all.gt.merged[!grepl("ERCC|GL", all.gt.merged$CHROM_POS_REF_ALT),]
   all.fix.merged<-all.fix.merged[!grepl("ERCC|GL", all.fix.merged$CHROM),]
   
-  
   all.fix.merged$REF<-as.character(all.fix.merged$REF)
   all.fix.merged$ALT<-as.character(all.fix.merged$ALT)
-  
-  
   all.info.merged<-cbind(all.info.merged, get.annovar.filters(all.fix.merged))
-  
-  
   
   ##apply basic filter and caller filter
   all.fix.filt<-all.fix.merged[all.info.merged$Caller_Filter & all.info.merged$basic.filters & all.info.merged$not.repeatmasker,]
@@ -127,8 +120,27 @@ three.caller.merge<-function(samp, file.list){
   all.gt.filt<-all.gt.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter ,]
   all.info.filt<-all.info.filt[!(all.info.filt$CLUST & all.info.filt$AF_Filter) & all.info.filt$Depth_Filter ,]
   
+  # Remove any rows with NA as the position index CHROM_POS_REF_ALT
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.fix.filt: %d/%d",
+    sum(is.na(all.fix.filt$CHROM_POS_REF_ALT)), nrow(all.fix.filt)))
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.info.filt: %d/%d", 
+    sum(is.na(all.info.filt$CHROM_POS_REF_ALT)), nrow(all.info.filt)))
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.gt.filt: %d/%d", 
+    sum(is.na(all.gt.filt$CHROM_POS_REF_ALT)), nrow(all.gt.filt)))
   
+  rows_to_include <- which(!is.na(all.fix.filt$CHROM_POS_REF_ALT))
+  all.fix.filt = all.fix.filt[rows_to_include,]
+  all.info.filt = all.info.filt[rows_to_include,]
+  all.gt.filt = all.gt.filt[rows_to_include,]
   
+  print("Sizes after removing NAs:")
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.fix.filt: %d/%d",
+    sum(is.na(all.fix.filt$CHROM_POS_REF_ALT)), nrow(all.fix.filt)))
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.info.filt: %d/%d", 
+    sum(is.na(all.info.filt$CHROM_POS_REF_ALT)), nrow(all.info.filt)))
+  print(sprintf("Rows with NA in CHROM_POS_REF_ALT in all.gt.filt: %d/%d", 
+    sum(is.na(all.gt.filt$CHROM_POS_REF_ALT)), nrow(all.gt.filt)))
+    
   all.fix.wl<-all.fix.merged[all.info.merged$whitelist,]
   all.info.wl<-all.info.merged[all.info.merged$whitelist,]
   all.gt.wl<-all.gt.merged[all.info.merged$whitelist,]
@@ -216,7 +228,6 @@ parse.hc.vcf<-function(all.data){
     parsed<-data.frame(parsed, stringsAsFactors = FALSE)
     
     return(parsed)
-    
   })
   
   all.gt.parsed.hc<-rbind.fill(tmp)
@@ -241,12 +252,7 @@ parse.hc.vcf<-function(all.data){
   all.gt.parsed.hc<-cbind(CHROM_POS_REF_ALT, all.gt.parsed.hc)
   
   
-  
-  
-  return(list(all.fix.hc, all.info.hc, all.gt.parsed.hc))
-  
-  
-  
+  return(list(all.fix.hc, all.info.hc, all.gt.parsed.hc)) 
 }
 
 parse.s2.vcf<-function(all.data){
@@ -302,7 +308,6 @@ parse.s2.vcf<-function(all.data){
     parsed<-data.frame(parsed, stringsAsFactors = FALSE)
     
     return(parsed)
-    
   })
   
   all.gt.parsed.s2<-rbind.fill(tmp)
@@ -314,16 +319,7 @@ parse.s2.vcf<-function(all.data){
   all.info.s2$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   all.gt.parsed.s2$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   
-  
-  
-  
-  
-  
-  
   return(list(all.fix.s2, all.info.s2, all.gt.parsed.s2))
-  
-  
-  
 }
 
 parse.dv.vcf<-function(all.data){
@@ -362,7 +358,6 @@ parse.dv.vcf<-function(all.data){
   }
   
   
-  
   all.fix.dv<-all.fix.dv[,!(colnames(all.fix.dv) %in% c("CIGAR", "RU", "REFREP", "IDREP"))]
   
   
@@ -385,22 +380,12 @@ parse.dv.vcf<-function(all.data){
   all.gt.parsed.dv<-rbind.fill(tmp)
   print(paste("Parsed ", ncol(all.gt.parsed.dv), " GT columns."))
   
-  
-  
   all.fix.dv$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   all.info.dv$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   all.gt.parsed.dv$CHROM_POS_REF_ALT<-CHROM_POS_REF_ALT
   
   
-  
-  
-  
-  
-  
   return(list(all.fix.dv, all.info.dv, all.gt.parsed.dv))
-  
-  
-  
 }
 
 merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
@@ -416,8 +401,6 @@ merge.vcfs<-function(samp, all.hc.data, all.dv.data, all.s2.data){
   merged.info$Caller_Filter<-(merged.info$`HC_FILTER`=="TRUE" & !(is.na(merged.info$`HC_FILTER`))) | (merged.info$`DV_FILTER`=="PASS"& !(is.na(merged.info$`DV_FILTER`))) | (merged.info$`S2_FILTER`=="PASS"& !(is.na(merged.info$`S2_FILTER`)))
   
   merged.fix<-merged.fix[!duplicated(merged.fix$CHROM_POS_REF_ALT),]
-  
-  
   
   
   return(list(merged.fix, merged.info, merged.gt))
@@ -490,9 +473,7 @@ get.annovar.filters<-function(all.fix.merged){
   
   ###repeatMasker
   
-  
   load("repeat_masker.RData")
-  #load("variantFilter/repeat_masker.RData")
   options(scipen = 999)
   
   print(head(all.fix.merged$REF))
@@ -520,7 +501,6 @@ get.annovar.filters<-function(all.fix.merged){
 
 get_whitelist_vars_dna<-function(dna_bam, ref){
   whitelist_path<-"filtered_whitelist_09302020.txt"
-  #whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', dna_bam, ' -r {1} :::: ', ref_fai ,' > dna_whitelist.txt' )
   
@@ -579,7 +559,6 @@ get_whitelist_vars_dna<-function(dna_bam, ref){
 
 get_whitelist_vars_rna<-function(rna_bam, ref){
   whitelist_path<-"filtered_whitelist_09302020.txt"
-  #whitelist_path<-"variantFilter/filtered_whitelist_09302020.txt"
   comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', whitelist_path, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_whitelist.txt'  )
   
   system(comm)
@@ -587,7 +566,6 @@ get_whitelist_vars_rna<-function(rna_bam, ref){
   rna_whitelist<-read.csv(file="rna_whitelist.txt", sep="\t", stringsAsFactors = FALSE, header = FALSE, quote="")
   
   colnames(rna_whitelist)<-c("Chr", "Pos", "Ref", "Depth", "mpileup", "Qual")
-  
   
   rna_whitelist$ref_FS<-str_count(rna_whitelist$mpileup, pattern="[.]")
   rna_whitelist$ref_RS<-str_count(rna_whitelist$mpileup, pattern=",")
@@ -634,7 +612,6 @@ get_whitelist_vars_rna<-function(rna_bam, ref){
   rna_vars$CHROM_POS_REF_ALT<-paste(rna_vars$Chr, rna_vars$Pos, rna_vars$Ref, rna_vars$Alt, sep="-")
   
   return(rna_vars)
-  
 }
 
 merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
@@ -648,8 +625,6 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   #colnames(merged_whitelist)[2:ncol(merged_whitelist)]<-paste0(samp, ".",colnames(merged_whitelist)[2:ncol(merged_whitelist)])
   
   load("filtered_whitelist_09302020.RData")
-  #load("variantFilter/filtered_whitelist_09302020.RData")
-  
   
   all_whitelist_annot<-merge(wl, merged_whitelist, by="CHROM_POS_REF_ALT", all.x=FALSE, all.y=FALSE)
   
@@ -659,9 +634,7 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   
   all_whitelist_merged<-merge(all_whitelist_discovery, all_whitelist_annot, by="CHROM_POS_REF_ALT", all.x=TRUE, all.y=TRUE)
   
-  
   #handle case where discovery had no whitelist variants
-  #handle case where discovery has no whitelist variants
   if (nrow(all_whitelist_merged)>0 & ncol(all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))])>0 & ncol(all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))])>0){
     all_whitelist_x<-all_whitelist_merged[,(grepl("[.]x", colnames(all_whitelist_merged)))]
     all_whitelist_y<-all_whitelist_merged[,(grepl("[.]y", colnames(all_whitelist_merged)))]
@@ -687,7 +660,6 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   }
   
   
-  
   all_whitelist_a<-all_whitelist_merged[,grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged))]
   all_whitelist_b<-all_whitelist_merged[,!(grepl("CHROM_POS_REF_ALT", colnames(all_whitelist_merged)))]
   
@@ -707,25 +679,27 @@ merge_whitelists<-function(dna_bam, rna_bam, ref, single.sample.merged){
   
   colnames(all_whitelist_merged)[1:4]<-c("CHROM", "POS", "REF", "ALT")
   
-  return(all_whitelist_merged)
-  
-  
-  
-  
+  return(all_whitelist_merged) 
 }
 
 get_validation_vars_rna<-function(rna_bam, ref, single.sample.merged, samp){
   
   filt.fix<-single.sample.merged[[4]]
   
-  end_pos<-unlist(lapply(1:nrow(filt.fix), function(x){as.numeric(filt.fix$POS[x]) + max(nchar(filt.fix$REF[x]), nchar(filt.fix$ALT[x]))}))
-  
+  print("input filt.fix:")
+  print(head(filt.fix))
+
+  end_pos<-unlist(lapply(1:nrow(filt.fix), function(x){as.numeric(filt.fix$POS[x]) + max(nchar(filt.fix$REF[x]), nchar(filt.fix$ALT[x]))}))  
+
   filt.bed<-cbind(filt.fix$CHROM, as.numeric(filt.fix$POS)-1, end_pos)
+
   filt.bed<-unique(filt.bed)
+
+  filt.bed.file <- paste0(getwd(), "/filt_bed.tmp.txt")
+
+  write.table(filt.bed, sep="\t", file=filt.bed.file, row.names=FALSE, col.names=FALSE, quote=FALSE)
   
-  write.table(filt.bed, sep="\t", file="filt_bed.txt", row.names=FALSE, col.names=FALSE, quote=FALSE)
-  
-  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l filt_bed.txt --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
+  comm<-paste0('parallel --colsep "\t" samtools mpileup -a -l ', filt.bed.file, ' --fasta-ref ',ref, ' ', rna_bam, ' -r {1} :::: ', ref_fai ,' > rna_filt.txt' )
   
   system(comm)
   
