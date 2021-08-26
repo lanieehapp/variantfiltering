@@ -99,7 +99,7 @@ all_whitelist<-cbind(all_good, all_bad)
 ###filter for exonic, not synonymous, >5 ALT reads
 clean_filtered<-all_filt_variants
 clean_filtered <- clean_filtered[clean_filtered$Func.refGene=="exonic",]        
-clean_filtered <- clean_filterd[!(clean_filtered$ExonicFunc.refGene=="synonymous_SNV"),]
+clean_filtered <- clean_filtered[!(clean_filtered$ExonicFunc.refGene=="synonymous_SNV"),]
 
 all_depth<-clean_filtered[,grep("*_AD$", colnames(clean_filtered))]
 alt_depth<-matrix(NA, nrow=nrow(all_depth), ncol=ncol(all_depth))
