@@ -56,9 +56,9 @@ three.caller.merge<-function(samp, file.list){
     }
   }
   
-  all.info.merged<-all.info.merged[!grepl("ERCC|GL", all.info.merged$CHROM_POS_REF_ALT),]
-  all.gt.merged<-all.gt.merged[!grepl("ERCC|GL", all.gt.merged$CHROM_POS_REF_ALT),]
-  all.fix.merged<-all.fix.merged[!grepl("ERCC|GL", all.fix.merged$CHROM),]
+  all.info.merged<-all.info.merged[!grepl("ERCC|GL|KI", all.info.merged$CHROM_POS_REF_ALT),]
+  all.gt.merged<-all.gt.merged[!grepl("ERCC|GL|KI", all.gt.merged$CHROM_POS_REF_ALT),]
+  all.fix.merged<-all.fix.merged[!grepl("ERCC|GL|KI", all.fix.merged$CHROM),]
   
   all.fix.merged$REF<-as.character(all.fix.merged$REF)
   all.fix.merged$ALT<-as.character(all.fix.merged$ALT)
