@@ -20,7 +20,7 @@ ref=args[6]
 ref_fai=args[7]
 
 
-source("single_sample_VCF_merge_functions.R")
+source("single_sample_VCF_merge_functions_popfreq1pct.R")
 
 single.sample.merged<-three.caller.merge(samp, path)
 
