@@ -6,14 +6,22 @@ MAINTAINER DaveLab <lab.dave@gmail.com>
 
 # update the OS related packages
 RUN apt-get update && apt-get install -y \
+    build-essential \
+    #libcurl4-gnutls-dev \
+    libcurl4-openssl-dev \
+    libxml2-dev \
+    libssl-dev \
+    libfontconfig1-dev \
+    libharfbuzz-dev \ 
+    libfribidi-dev \
+    libfreetype6-dev \
+    libpng-dev \
+    libtiff5-dev \
+    libjpeg-dev \
     gawk \
     unzip \
     less \
     git \
-    build-essential \
-    libcurl4-gnutls-dev \
-    libxml2-dev \
-    libssl-dev \
     bedtools \
     parallel \
     samtools 	
@@ -36,3 +44,4 @@ ENV PATH variantfiltering:$PATH
 # change the permission of the repo
 RUN chmod 777 -R variantfiltering
 WORKDIR /usr/local/bin/variantfiltering
+
